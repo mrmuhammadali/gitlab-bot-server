@@ -54,7 +54,7 @@ var BotOperations = exports.BotOperations = function BotOperations() {
         {
           var AUTHORIZATION_URI = oauth2.authorizationCode.authorizeURL({
             client_id: utils.GITLAB_CREDENTIALS.client.id,
-            authorization_uri: (0, _lodash.unescape)(utils.BASE_URL + utils.AUTH_CALLBACK_ENDPOINT),
+            redirect_uri: utils.BASE_URL + utils.AUTH_CALLBACK_ENDPOINT,
             response_type: 'code',
             state: chatId
           });

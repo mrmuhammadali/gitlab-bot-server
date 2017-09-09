@@ -148,5 +148,5 @@ telegramBot.on('callback_query', function (callbackQuery) {
 });
 
 app.listen(process.env.PORT || 3030, function () {
-  console.log('Assembla Bot Server started at port: ' + (process.env.PORT || 3030));
+  console.log('GitLab Bot Server started at port: ' + (process.env.PORT || 3030));
 });
