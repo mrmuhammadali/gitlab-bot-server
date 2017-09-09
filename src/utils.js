@@ -1,5 +1,6 @@
 export const GITLAB_URL = 'https://gitlab.com/api/v4'
-export const BASE_URL = 'https://gitlab-bot-server.herokuapp.com';
+export const BASE_URL = 'https://gitlab-bot-server.herokuapp.com'
+export const AUTH_CALLBACK_ENDPOINT = '/auth-callback'
 export const TELEGRAM_TOKEN = '390407644:AAF5qrrLrku8zMel5lHUKF1czBv5kyQrhJY'
 // export const TELEGRAM_TOKEN = '407191495:AAFvFL2_KtFmo7QlcPzV7bJR-14YYBxTbXo'
 export const TELEGRAM_BOT_URL = 'https://t.me/MrGitLabBot/'

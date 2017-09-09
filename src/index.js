@@ -6,15 +6,15 @@ import _ from 'lodash'
 
 import * as routes from './routes'
 import models from './models'
-import {TELEGRAM_BOT_URL, SKYPE_ADDRESS, SKYPE_CREDENTIALS, MESSAGE} from './utils'
-import {TelegramBot} from './TelegramBot'
-import {BotOperations} from './botOperations'
+import { TELEGRAM_BOT_URL, SKYPE_ADDRESS, SKYPE_CREDENTIALS, MESSAGE, AUTH_CALLBACK_ENDPOINT } from './utils'
+import { TelegramBot } from './TelegramBot'
+import { BotOperations } from './botOperations'
 
 const telegramBot = new TelegramBot()
 const botOperations = new BotOperations()
 const app = express()
   .use(bodyParser.json())
-  .use('/auth-callback', routes.authCallback)
+  .use(AUTH_CALLBACK_ENDPOINT, routes.authCallback)
 
 app.get('/', (req, res) => res.redirect(TELEGRAM_BOT_URL) )
 

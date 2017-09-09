@@ -33,7 +33,7 @@ var builder = require('botbuilder');
 
 var telegramBot = new _TelegramBot.TelegramBot();
 var botOperations = new _botOperations.BotOperations();
-var app = express().use(bodyParser.json()).use('/auth-callback', routes.authCallback);
+var app = express().use(bodyParser.json()).use(_utils.AUTH_CALLBACK_ENDPOINT, routes.authCallback);
 
 app.get('/', function (req, res) {
   return res.redirect(_utils.TELEGRAM_BOT_URL);

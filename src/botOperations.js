@@ -27,6 +27,7 @@ export class BotOperations {
       case COMMANDS.CONNECT: {
         const AUTHORIZATION_URI = oauth2.authorizationCode.authorizeURL({
           client_id: utils.GITLAB_CREDENTIALS.client.id,
+          authorization_uri: utils.BASE_URL + utils.AUTH_CALLBACK_ENDPOINT,
           response_type: 'code',
           state: chatId
         });
