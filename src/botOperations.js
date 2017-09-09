@@ -5,7 +5,7 @@ import {TelegramBot} from './TelegramBot'
 const request = require('request');
 const oauth2 = require('simple-oauth2').create(utils.GITLAB_CREDENTIALS)
 const telegramBot = new TelegramBot()
-import {get, words, without} from "lodash"
+import {get, unescape, words, without} from "lodash"
 
 export class BotOperations {
 
@@ -25,12 +25,12 @@ export class BotOperations {
         break;
       }
       case COMMANDS.CONNECT: {
-        const AUTHORIZATION_URI = oauth2.authorizationCode.authorizeURL({
+        const AUTHORIZATION_URI = unescape(oauth2.authorizationCode.authorizeURL({
           client_id: utils.GITLAB_CREDENTIALS.client.id,
           authorization_uri: utils.BASE_URL + utils.AUTH_CALLBACK_ENDPOINT,
           response_type: 'code',
           state: chatId
-        });
+        }))
 
         if (isSkype) {
           session.send(utils.MESSAGE.CONNECT + AUTHORIZATION_URI)
