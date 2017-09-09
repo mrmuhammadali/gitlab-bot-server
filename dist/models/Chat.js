@@ -7,10 +7,7 @@ module.exports = function (sequelize, DataTypes) {
       primaryKey: true
     },
     access_token: DataTypes.STRING,
-    refresh_token: DataTypes.STRING,
-    expires_at: DataTypes.DATE
-  }, {
-    timestamps: false
+    refresh_token: DataTypes.STRING
   });
 
   return Chat;

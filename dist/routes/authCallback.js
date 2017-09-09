@@ -40,12 +40,9 @@ exports.default = router.get('', function (req, res) {
   var isSkype = /[a-z]/.test(chatId);
 
   oauth2.authorizationCode.getToken({
-    // client_id: utils.GITLAB_CREDENTIALS.client.id,
-    // client_secret: utils.GITLAB_CREDENTIALS.client.secret,
     code: code,
     grant_type: 'authorization_code',
     redirect_uri: utils.BASE_URL + utils.AUTH_CALLBACK_ENDPOINT
-
   }, function (error, result) {
     if (error) {
       console.log(utils.MESSAGE.ACCESS_TOKEN_ERROR, error);
