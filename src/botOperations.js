@@ -25,12 +25,12 @@ export class BotOperations {
         break;
       }
       case COMMANDS.CONNECT: {
-        const AUTHORIZATION_URI = unescape(oauth2.authorizationCode.authorizeURL({
+        const AUTHORIZATION_URI = oauth2.authorizationCode.authorizeURL({
           client_id: utils.GITLAB_CREDENTIALS.client.id,
-          authorization_uri: utils.BASE_URL + utils.AUTH_CALLBACK_ENDPOINT,
+          authorization_uri: unescape(utils.BASE_URL + utils.AUTH_CALLBACK_ENDPOINT),
           response_type: 'code',
           state: chatId
-        }))
+        })
 
         if (isSkype) {
           session.send(utils.MESSAGE.CONNECT + AUTHORIZATION_URI)

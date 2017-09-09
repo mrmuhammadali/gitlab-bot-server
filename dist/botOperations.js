@@ -52,12 +52,12 @@ var BotOperations = exports.BotOperations = function BotOperations() {
         }
       case COMMANDS.CONNECT:
         {
-          var AUTHORIZATION_URI = (0, _lodash.unescape)(oauth2.authorizationCode.authorizeURL({
+          var AUTHORIZATION_URI = oauth2.authorizationCode.authorizeURL({
             client_id: utils.GITLAB_CREDENTIALS.client.id,
-            authorization_uri: utils.BASE_URL + utils.AUTH_CALLBACK_ENDPOINT,
+            authorization_uri: (0, _lodash.unescape)(utils.BASE_URL + utils.AUTH_CALLBACK_ENDPOINT),
             response_type: 'code',
             state: chatId
-          }));
+          });
 
           if (isSkype) {
             session.send(utils.MESSAGE.CONNECT + AUTHORIZATION_URI);
