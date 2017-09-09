@@ -16,15 +16,15 @@ export default router.get('', (req, res) => {
   const address = utils.SKYPE_ADDRESS
   address.conversation.id = chatId
   const reply = new builder.Message().address(address)
-  let isSkype = false
-
-  if (/[a-z]/.test(chatId)) {
-    isSkype = true
-  }
+  const isSkype = /[a-z]/.test(chatId)
 
   oauth2.authorizationCode.getToken({
+    // client_id: utils.GITLAB_CREDENTIALS.client.id,
+    // client_secret: utils.GITLAB_CREDENTIALS.client.secret,
     code,
-    grant_type: 'authorization_code'
+    grant_type: 'authorization_code',
+    redirect_uri: utils.BASE_URL + utils.AUTH_CALLBACK_ENDPOINT,
+
   }, (error, result) => {
     if (error) {
       console.log(utils.MESSAGE.ACCESS_TOKEN_ERROR, error)
