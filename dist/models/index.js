@@ -30,7 +30,7 @@ models.forEach(function (model) {
   }).catch(function (err) {
     console.error('Unable to connect to the database:', err);
   });
-  sequelize.sync({ force: true }).then(function () {
+  sequelize.sync().then(function () {
     console.log("Successfully synced!!!");
   });
 })(module.exports);
