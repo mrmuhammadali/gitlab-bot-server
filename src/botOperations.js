@@ -155,15 +155,13 @@ export class BotOperations {
 
 
 
-  fetchSpaces = (isSkype, chatId, session, access_token) => {
+  fetchProjects = (isSkype, chatId, session, access_token) => {
     const opts = {
       method: 'GET',
-      uri: `${utils.GITLAB_URL}/projects`,
-      auth: {
-        bearer: access_token
-      }
+      uri: `${utils.GITLAB_URL}/groups`,
+      auth: { bearer: access_token }
     }
-    request(opts, (error, response, responseBody) => {
+    request(opts, (error, response, groups) => {
       responseBody = JSON.parse(responseBody)
       console.log(responseBody)
       if (responseBody.error) {
@@ -173,28 +171,37 @@ export class BotOperations {
           telegramBot.sendMessage(chatId, utils.MESSAGE.INVALID_TOKEN);
         }
       } else {
-        const telegramSpaces = []
-        const skypeSpaces = {}
-        for (let i = 0; i < responseBody.length; i++) {
-          const { wiki_name, name } = responseBody[i]
-          const callback_data = JSON.stringify([wiki_name, name]);
-          console.log("Wiki Name: ", wiki_name)
-          telegramSpaces.push([{ text: name, callback_data }])
-          // skypeSpaces.push({title: name, value: wiki_name})
-          skypeSpaces[name] = { spaceWikiName: wiki_name, spaceName: name }
-        }
+        const telegramProjects = []
+        const skypeProjects = {}
+        // for (let i = 0; i < responseBody.length; i++) {
+        //   const { wiki_name, name } = responseBody[i]
+        //   const callback_data = JSON.stringify([wiki_name, name]);
+        //   console.log("Wiki Name: ", wiki_name)
+        //   telegramProjects.push([{ text: name, callback_data }])
+        //   skypeProjects[name] = { spaceWikiName: wiki_name, spaceName: name }
+        // }
 
+        Promise.all(groups.map(group => {
+          request.get(`${utils.GITLAB_URL}/groups/${group.id}/projects`,{auth: { bearer: access_token }})
+        })).then(resArray => {
+          console.log('responseArray++++', resArray)
+          resArray.map(res => {
+            const { id: projectId, name: projectName, name_with_namespace, nameSpace: { id: groupId, name: groupName } } = res
+            const callback_data = JSON.stringify([projectId, name_with_namespace]);
+            telegramProjects.push([{ text: name_with_namespace, callback_data }])
+          })
         if (isSkype) {
-          session.beginDialog('askSpaceIntegrate', {spaces: skypeSpaces});
+          session.beginDialog('askSpaceIntegrate', {spaces: skypeProjects});
         } else {
           const opts = {
             reply_to_message_id: session.message_id,
             reply_markup: {
-              inline_keyboard: telegramSpaces
+              inline_keyboard: telegramProjects
             }
           };
           telegramBot.sendMessage(chatId, utils.MESSAGE.CHOOSE_SAPCE_INTEGRATE, opts);
         }
+        })
       }
     });
   }
@@ -212,7 +219,7 @@ export class BotOperations {
         const {access_token, expires_at} = {...token.token}
         console.log("New Token: ", {...token.token})
         models.Chat.update({access_token, expires_at}, {where: {chatId}})
-        this.fetchSpaces(isSkype, chatId, session, access_token)
+        this.fetchProjects(isSkype, chatId, session, access_token)
       }
     })
   }
@@ -220,12 +227,8 @@ export class BotOperations {
   handleNewIntegration = (isSkype, chatId, session) => {
     models.Chat.findOne({where: {chatId}})
       .then( chat => {
-        const {access_token, refresh_token, expires_at} = get(chat, 'dataValues', '')
-        if (new Date().getTime() > expires_at.getTime()) {
-          this.refreshToken(isSkype, chatId, session, refresh_token)
-        } else {
-          this.fetchSpaces(isSkype, chatId, session, access_token)
-        }
+        const {access_token, refresh_token} = get(chat, 'dataValues', '')
+          this.fetchProjects(isSkype, chatId, session, access_token)
       })
   }
 
@@ -255,24 +258,24 @@ export class BotOperations {
     models.Integration.findAll({where:{chatId}})
       .then(integrations => {
         if (integrations !== null) {
-          const telegramSpaces = []
-          const skypeSpaces = {}
+          const telegramProjects = []
+          const skypeProjects = {}
           for (let i = 0; i < integrations.length; i++) {
             const {id: integrationId, spaceName} = integrations[i].dataValues
             const callback_data = JSON.stringify([integrationId, spaceName]);
 
-            telegramSpaces.push([{text: spaceName, callback_data}])
-            skypeSpaces[spaceName] = { integrationId, spaceName }
+            telegramProjects.push([{text: spaceName, callback_data}])
+            skypeProjects[spaceName] = { integrationId, spaceName }
           }
 
           if (isSkype) {
-            session.beginDialog('askSpaceDelete', { spaces: skypeSpaces })
+            session.beginDialog('askSpaceDelete', { spaces: skypeProjects })
           } else {
             const reply_to_message_id = get(session, 'message_id', 0)
             const opts = {
               reply_to_message_id,
               reply_markup: {
-                inline_keyboard: telegramSpaces
+                inline_keyboard: telegramProjects
               }
             };
             telegramBot.sendMessage(chatId, utils.MESSAGE.CHOOSE_SAPCE_DELETE, opts);
