@@ -90,7 +90,7 @@ export const MESSAGE = {
   DATABASE_ERROR: "Process failed! Try again later.",
   INTRODUCE_BOT: `I'm a GitLab bot. I'll send notifications of activities in a project.\n\nAvailable commands:
   /connect - Authorize bot via OAuth
-  /newintegration - Add integration with a GitHub repository
+  /newintegration - Add integration with a GitLab repository
   /listintegrations - List all current integrations
   /delintegration - Delete integration
   /help - List available commands

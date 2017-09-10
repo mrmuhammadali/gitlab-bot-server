@@ -93,5 +93,5 @@ var MESSAGE = exports.MESSAGE = {
   SPACE_DELETED: " project deleted from this chat.",
   LIST_INTEGRATION: 'Following projects are integrated:\n',
   DATABASE_ERROR: "Process failed! Try again later.",
-  INTRODUCE_BOT: 'I\'m a GitLab bot. I\'ll send notifications of activities in a project.\n\nAvailable commands:\n  /connect - Authorize bot via OAuth\n  /newintegration - Add integration with a GitHub repository\n  /listintegrations - List all current integrations\n  /delintegration - Delete integration\n  /help - List available commands\n  /cancel - Cancel the current command'
+  INTRODUCE_BOT: 'I\'m a GitLab bot. I\'ll send notifications of activities in a project.\n\nAvailable commands:\n  /connect - Authorize bot via OAuth\n  /newintegration - Add integration with a GitLab repository\n  /listintegrations - List all current integrations\n  /delintegration - Delete integration\n  /help - List available commands\n  /cancel - Cancel the current command'
 };
