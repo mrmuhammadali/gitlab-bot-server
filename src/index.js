@@ -2,7 +2,6 @@ const bodyParser = require('body-parser');
 const express = require('express');
 const builder = require('botbuilder');
 import unescape from 'lodash/unescape'
-import _ from 'lodash'
 
 import * as routes from './routes'
 import models from './models'
@@ -22,10 +21,7 @@ app.get('/get-all', (req, res) => {
   models.Chat.findAll({ include: [models.Integration]})
     .then(chats => {
       if (chats !== null) {
-        const data = []
-        for (let i = 0; i < chats.length; i++) {
-          data.push(chats[i].dataValues)
-        }
+        const data = chats.map(({ dataValues }) => dataValues)
         res.json(data);
       }
     })

@@ -1,5 +1,5 @@
 const telegram = require('node-telegram-bot-api');
-import {TELEGRAM_TOKEN} from "./utils"
+import { TELEGRAM_TOKEN } from "./utils"
 
 let bot = null
 

@@ -5,7 +5,6 @@ export const TELEGRAM_TOKEN = '390407644:AAF5qrrLrku8zMel5lHUKF1czBv5kyQrhJY'
 // export const TELEGRAM_TOKEN = '407191495:AAFvFL2_KtFmo7QlcPzV7bJR-14YYBxTbXo'
 export const TELEGRAM_BOT_URL = 'https://t.me/MrGitLabBot/'
 export const SKYPE_BOT_URL = 'https://join.skype.com/bot/8864cf5d-3c38-457f-976f-cfb07dd93c7f'
-export const CONVERSATION_ID = '19:978ea7f80ded467695613d0813126361@thread.skype'
 
 export const GITLAB_CREDENTIALS = {
   client: {
@@ -35,26 +34,11 @@ export const SKYPE_CREDENTIALS = {
 }
 
 export const DB_CONFIG = {
-  name: 'dfkcg96lgv1ob0',
-  user: 'tqrldekflsrwxc',
-  password: '621a00e80cc61917d3b261dd9f9aa39c819793a0634038b2099053fe4ebb57d3',
-  options: {
-    host: 'ec2-46-137-97-169.eu-west-1.compute.amazonaws.com',
-    port: '5432',
-    dialect: 'postgres',
-    protocol: 'postgres',
-    dialectOptions: {
-      ssl: true
-    }
-  }
-}
-export const DB_CONFIG_LOCAL = {
   name: 'gitlabdb',
   user: 'azure',
   password: '6#vWHD_$',
   options: {
     host: '127.0.0.1',
-    // port: '55335',
     port: '3306',
     dialect: 'mysql'
   }

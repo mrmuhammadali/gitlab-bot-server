@@ -5,14 +5,11 @@ var _utils = require('../utils');
 var Sequelize = require('sequelize');
 
 
-var DB_CONFIG = _utils.DB_CONFIG_LOCAL;
-
-// console.log("Connection String: ", process.env.DATABASE_URL)
 var sequelize = '';
 if (process.env.DATABASE_URL) {
   sequelize = new Sequelize(process.env.DATABASE_URL, { options: { dialect: 'postgres' } });
 } else {
-  sequelize = new Sequelize(DB_CONFIG.name, DB_CONFIG.user, DB_CONFIG.password, DB_CONFIG.options);
+  sequelize = new Sequelize(_utils.DB_CONFIG.name, _utils.DB_CONFIG.user, _utils.DB_CONFIG.password, _utils.DB_CONFIG.options);
 }
 
 var models = ['Chat', 'Integration'];

@@ -1,11 +1,11 @@
 import * as utils from './utils'
 import models from './models'
-import {TelegramBot} from './TelegramBot'
+import { TelegramBot } from './TelegramBot'
 
 const request = require('request-promise');
 const oauth2 = require('simple-oauth2').create(utils.GITLAB_CREDENTIALS)
 const telegramBot = new TelegramBot()
-import {get, unescape, words, without} from "lodash"
+import { get, words, without } from "lodash"
 
 export class BotOperations {
 
@@ -208,6 +208,7 @@ export class BotOperations {
     });
   }
 
+  // TODO refresh token
   refreshToken = (isSkype, chatId, session, refresh_token) => {
     const opts = {
       method: 'POST',
@@ -239,10 +240,10 @@ export class BotOperations {
       .then(integrations => {
         if (integrations !== null) {
           let integrationStr = ''
-          for (let i = 0; i < integrations.length; i++) {
-            console.log(integrations[i].dataValues.projectFullName)
-            integrationStr += `${(i+1)}. ${integrations[i].dataValues.projectFullName}\n`
-          }
+          integrations.map(({dataValues: integration}) => {
+            console.log(integration.projectFullName)
+            integrationStr += `${(i+1)}. ${integration.projectFullName}\n`
+          })
           const message = integrationStr ? utils.MESSAGE.LIST_INTEGRATION + integrationStr
             : utils.MESSAGE.NOTHING_INTEGRATED
 
@@ -262,9 +263,8 @@ export class BotOperations {
         if (integrations !== null) {
           const telegramProjects = []
           const skypeProjects = {}
-          integrations.map(({ dataValues }) => {
-            const { projectId, projectFullName } = dataValues
-            console.log("+++projectId: ", projectId)
+          integrations.map(({ dataValues: integration }) => {
+            const { projectId, projectFullName } = integration
             const callback_data = JSON.stringify([projectId, projectFullName]);
 
             telegramProjects.push([{text: projectFullName, callback_data}])

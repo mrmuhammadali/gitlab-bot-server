@@ -1,9 +1,6 @@
 const Sequelize = require('sequelize');
-import {DB_CONFIG_LOCAL} from "../utils"
+import { DB_CONFIG } from "../utils"
 
-const DB_CONFIG = DB_CONFIG_LOCAL
-
-// console.log("Connection String: ", process.env.DATABASE_URL)
 let sequelize = ''
 if (process.env.DATABASE_URL) {
   sequelize = new Sequelize(process.env.DATABASE_URL, {options: {dialect: 'postgres'}})

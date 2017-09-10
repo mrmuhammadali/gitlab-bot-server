@@ -269,10 +269,12 @@ var BotOperations = exports.BotOperations = function BotOperations() {
     _models2.default.Integration.findAll({ where: { chatId: chatId } }).then(function (integrations) {
       if (integrations !== null) {
         var integrationStr = '';
-        for (var i = 0; i < integrations.length; i++) {
-          console.log(integrations[i].dataValues.projectFullName);
-          integrationStr += i + 1 + '. ' + integrations[i].dataValues.projectFullName + '\n';
-        }
+        integrations.map(function (_ref) {
+          var integration = _ref.dataValues;
+
+          console.log(integration.projectFullName);
+          integrationStr += i + 1 + '. ' + integration.projectFullName + '\n';
+        });
         var message = integrationStr ? utils.MESSAGE.LIST_INTEGRATION + integrationStr : utils.MESSAGE.NOTHING_INTEGRATED;
 
         if (isSkype) {
@@ -290,12 +292,11 @@ var BotOperations = exports.BotOperations = function BotOperations() {
       if (integrations !== null) {
         var telegramProjects = [];
         var skypeProjects = {};
-        integrations.map(function (_ref) {
-          var dataValues = _ref.dataValues;
-          var projectId = dataValues.projectId,
-              projectFullName = dataValues.projectFullName;
+        integrations.map(function (_ref2) {
+          var integration = _ref2.dataValues;
+          var projectId = integration.projectId,
+              projectFullName = integration.projectFullName;
 
-          console.log("+++projectId: ", projectId);
           var callback_data = JSON.stringify([projectId, projectFullName]);
 
           telegramProjects.push([{ text: projectFullName, callback_data: callback_data }]);
@@ -317,4 +318,7 @@ var BotOperations = exports.BotOperations = function BotOperations() {
       }
     });
   };
-};
+}
+
+// TODO refresh token
+;

@@ -4,10 +4,6 @@ var _unescape = require('lodash/unescape');
 
 var _unescape2 = _interopRequireDefault(_unescape);
 
-var _lodash = require('lodash');
-
-var _lodash2 = _interopRequireDefault(_lodash);
-
 var _routes = require('./routes');
 
 var routes = _interopRequireWildcard(_routes);
@@ -42,10 +38,10 @@ app.get('/', function (req, res) {
 app.get('/get-all', function (req, res) {
   _models2.default.Chat.findAll({ include: [_models2.default.Integration] }).then(function (chats) {
     if (chats !== null) {
-      var data = [];
-      for (var i = 0; i < chats.length; i++) {
-        data.push(chats[i].dataValues);
-      }
+      var data = chats.map(function (_ref) {
+        var dataValues = _ref.dataValues;
+        return dataValues;
+      });
       res.json(data);
     }
   });
