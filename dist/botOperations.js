@@ -290,16 +290,17 @@ var BotOperations = exports.BotOperations = function BotOperations() {
       if (integrations !== null) {
         var telegramProjects = [];
         var skypeProjects = {};
-        for (var i = 0; i < integrations.length; i++) {
-          var _integrations$i$dataV = integrations[i].dataValues,
-              projectId = _integrations$i$dataV.projectId,
-              projectFullName = _integrations$i$dataV.projectFullName;
+        integrations.map(function (_ref) {
+          var dataValues = _ref.dataValues;
+          var projectId = dataValues.projectId,
+              projectFullName = dataValues.projectFullName;
 
+          console.log("+++projectId: ", projectId);
           var callback_data = JSON.stringify([projectId, projectFullName]);
 
           telegramProjects.push([{ text: projectFullName, callback_data: callback_data }]);
           skypeProjects[projectFullName] = { projectId: projectId, projectFullName: projectFullName };
-        }
+        });
 
         if (isSkype) {
           session.beginDialog('askSpaceDelete', { projects: skypeProjects });

@@ -68,7 +68,16 @@ skypeBot.dialog('askSpaceDelete', [
   }
 ]);
 
+telegramBot.onText(/\/(.+)/, (msg, match) => {
+  botOperations.handleCommands(match[1], false, msg)
+});
+
+telegramBot.on('callback_query',  (callbackQuery) => {
+  botOperations.handleCallbackQuery(callbackQuery)
+});
+
 app.post('/webhook', (req, res) => {
+  console.log("++Webhook Response: ", req.body)
   const {
     spaceWikiName, author, object, space, action, title, body,
     link, repositoryUrl, repositorySuffix, branch, commitId
@@ -79,7 +88,6 @@ app.post('/webhook', (req, res) => {
       body.lastIndexOf('------------------------------+----------------------------------------------') + 77
     )
   }
-  console.log("Webhook Response Body: ", body)
   models.Integration.findAll({where: {spaceWikiName}})
     .then(integrations => {
       if (integrations !== null) {
@@ -101,14 +109,6 @@ app.post('/webhook', (req, res) => {
     })
   res.json({name: spaceWikiName})
 })
-
-telegramBot.onText(/\/(.+)/, (msg, match) => {
-  botOperations.handleCommands(match[1], false, msg)
-});
-
-telegramBot.on('callback_query',  (callbackQuery) => {
-  botOperations.handleCallbackQuery(callbackQuery)
-});
 
 app.listen(process.env.PORT || 3030, () => {
   console.log(`GitLab Bot Server started at port: ${process.env.PORT || 3030}`);

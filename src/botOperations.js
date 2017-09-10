@@ -262,13 +262,14 @@ export class BotOperations {
         if (integrations !== null) {
           const telegramProjects = []
           const skypeProjects = {}
-          for (let i = 0; i < integrations.length; i++) {
-            const {projectId, projectFullName} = integrations[i].dataValues
+          integrations.map(({ dataValues }) => {
+            const { projectId, projectFullName } = dataValues
+            console.log("+++projectId: ", projectId)
             const callback_data = JSON.stringify([projectId, projectFullName]);
 
             telegramProjects.push([{text: projectFullName, callback_data}])
             skypeProjects[projectFullName] = { projectId, projectFullName }
-          }
+          })
 
           if (isSkype) {
             session.beginDialog('askSpaceDelete', { projects: skypeProjects })

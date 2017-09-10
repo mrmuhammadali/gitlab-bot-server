@@ -97,7 +97,16 @@ skypeBot.dialog('askSpaceDelete', [function (session, args) {
   botOperations.deleteIntegration(true, chatId, session, projectId, projectFullName);
 }]);
 
+telegramBot.onText(/\/(.+)/, function (msg, match) {
+  botOperations.handleCommands(match[1], false, msg);
+});
+
+telegramBot.on('callback_query', function (callbackQuery) {
+  botOperations.handleCallbackQuery(callbackQuery);
+});
+
 app.post('/webhook', function (req, res) {
+  console.log("++Webhook Response: ", req.body);
   var _req$body = req.body,
       spaceWikiName = _req$body.spaceWikiName,
       author = _req$body.author,
@@ -116,7 +125,6 @@ app.post('/webhook', function (req, res) {
   if (body.lastIndexOf('------------------------------+----------------------------------------------') > 0) {
     str += '\n\n' + body.substr(body.lastIndexOf('------------------------------+----------------------------------------------') + 77);
   }
-  console.log("Webhook Response Body: ", body);
   _models2.default.Integration.findAll({ where: { spaceWikiName: spaceWikiName } }).then(function (integrations) {
     if (integrations !== null) {
       for (var i = 0; i < integrations.length; i++) {
@@ -137,14 +145,6 @@ app.post('/webhook', function (req, res) {
     }
   });
   res.json({ name: spaceWikiName });
-});
-
-telegramBot.onText(/\/(.+)/, function (msg, match) {
-  botOperations.handleCommands(match[1], false, msg);
-});
-
-telegramBot.on('callback_query', function (callbackQuery) {
-  botOperations.handleCallbackQuery(callbackQuery);
 });
 
 app.listen(process.env.PORT || 3030, function () {
