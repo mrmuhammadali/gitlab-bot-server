@@ -298,7 +298,7 @@ var BotOperations = exports.BotOperations = function BotOperations() {
           var callback_data = JSON.stringify([projectId, projectFullName]);
 
           telegramProjects.push([{ text: projectFullName, callback_data: callback_data }]);
-          skypeProjects[projectId] = { projectId: projectId, projectFullName: projectFullName };
+          skypeProjects[projectFullName] = { projectId: projectId, projectFullName: projectFullName };
         }
 
         if (isSkype) {

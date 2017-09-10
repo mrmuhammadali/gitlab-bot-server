@@ -267,7 +267,7 @@ export class BotOperations {
             const callback_data = JSON.stringify([projectId, projectFullName]);
 
             telegramProjects.push([{text: projectFullName, callback_data}])
-            skypeProjects[projectId] = { projectId, projectFullName }
+            skypeProjects[projectFullName] = { projectId, projectFullName }
           }
 
           if (isSkype) {
