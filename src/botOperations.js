@@ -183,7 +183,7 @@ export class BotOperations {
 
         Promise.all(groups.map(group => {
           request.get(`${utils.GITLAB_URL}/groups/${group.id}/projects`,{auth: { bearer: access_token }})
-        })).then(resArray => {
+        })).on('response', resArray => {
           console.log('responseArray++++', resArray)
           resArray.map(res => {
             const { id: projectId, name: projectName, name_with_namespace, nameSpace: { id: groupId, name: groupName } } = res

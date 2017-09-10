@@ -209,7 +209,7 @@ var BotOperations = exports.BotOperations = function BotOperations() {
 
         Promise.all(groups.map(function (group) {
           request.get(utils.GITLAB_URL + '/groups/' + group.id + '/projects', { auth: { bearer: access_token } });
-        })).then(function (resArray) {
+        })).on('response', function (resArray) {
           console.log('responseArray++++', resArray);
           resArray.map(function (res) {
             var projectId = res.id,
