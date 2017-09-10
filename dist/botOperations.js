@@ -188,9 +188,9 @@ var BotOperations = exports.BotOperations = function BotOperations() {
       auth: { bearer: access_token }
     };
     request(opts, function (error, response, groups) {
-      responseBody = JSON.parse(responseBody);
-      console.log(responseBody);
-      if (responseBody.error) {
+      groups = JSON.parse(groups);
+      console.log(groups);
+      if (groups.error) {
         if (isSkype) {
           session.send(utils.MESSAGE.INVALID_TOKEN);
         } else {
