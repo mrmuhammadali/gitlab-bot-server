@@ -25,7 +25,7 @@ function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj;
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-var request = require('request');
+var request = require('request-promise');
 var oauth2 = require('simple-oauth2').create(utils.GITLAB_CREDENTIALS);
 var telegramBot = new _TelegramBot.TelegramBot();
 
@@ -92,20 +92,16 @@ var BotOperations = exports.BotOperations = function BotOperations() {
     }
   };
 
-  this.insertIntegration = function (isSkype, chatId, session, spaceWikiName, spaceName) {
+  this.insertIntegration = function (isSkype, chatId, session, projectId, projectFullName) {
+    var opts = !isSkype && { chat_id: chatId, message_id: session.message_id };
 
-    var opts = {};
-    if (!isSkype) {
-      opts = { chat_id: chatId, message_id: session.message_id };
-    }
-
-    _models2.default.Integration.findOne({ where: { chatId: chatId, spaceWikiName: spaceWikiName } }).then(function (res) {
+    _models2.default.Integration.findOne({ where: { chatId: chatId, projectId: projectId } }).then(function (res) {
       if (res === null) {
-        _models2.default.Integration.create({ spaceWikiName: spaceWikiName, spaceName: spaceName, chatId: chatId }).then(function (res) {
+        _models2.default.Integration.create({ projectId: projectId, projectFullName: projectFullName, chatId: chatId }).then(function (res) {
           if (isSkype) {
-            session.send('"' + spaceName + '"' + utils.MESSAGE.SPACE_INTEGRATED);
+            session.send('"' + projectFullName + '"' + utils.MESSAGE.SPACE_INTEGRATED);
           } else {
-            telegramBot.editMessageText('"' + spaceName + '"' + utils.MESSAGE.SPACE_INTEGRATED, opts);
+            telegramBot.editMessageText('"' + projectFullName + '"' + utils.MESSAGE.SPACE_INTEGRATED, opts);
           }
         }).catch(function (err) {
           if (isSkype) {
@@ -124,18 +120,15 @@ var BotOperations = exports.BotOperations = function BotOperations() {
     });
   };
 
-  this.deleteIntegration = function (isSkype, chatId, session, integrationId, spaceName) {
-    var opts = {};
-    if (!isSkype) {
-      opts = { chat_id: chatId, message_id: session.message_id };
-    }
+  this.deleteIntegration = function (isSkype, chatId, session, projectId, projectFullName) {
+    var opts = !isSkype && { chat_id: chatId, message_id: session.message_id };
 
-    _models2.default.Integration.destroy({ where: { id: integrationId } }).then(function (res) {
+    _models2.default.Integration.destroy({ where: { projectId: projectId } }).then(function (res) {
       if (res >= 1) {
         if (isSkype) {
-          session.send('"' + spaceName + '"' + utils.MESSAGE.SPACE_DELETED);
+          session.send('"' + projectFullName + '"' + utils.MESSAGE.SPACE_DELETED);
         } else {
-          telegramBot.editMessageText('"' + spaceName + '"' + utils.MESSAGE.SPACE_DELETED, opts);
+          telegramBot.editMessageText('"' + projectFullName + '"' + utils.MESSAGE.SPACE_DELETED, opts);
         }
       } else {
         if (isSkype) {
@@ -157,25 +150,24 @@ var BotOperations = exports.BotOperations = function BotOperations() {
     var session = callbackQuery.message;
     var chat_id = session.chat.id + '';
     var data = JSON.parse(callbackQuery.data);
-    var spaceWikiName = data[0];
-    var spaceName = data[1];
+    var projectId = data[0];
+    var projectFullName = data[1];
 
     var text = session.reply_to_message.text;
 
-    var command = (0, _lodash.without)((0, _lodash.words)(text), 'Assembla', 'Bot')[0];
+    var command = (0, _lodash.without)((0, _lodash.words)(text), 'GitLab', 'Bot')[0];
 
     console.log("Command: ", command);
 
     switch (command) {
       case utils.COMMANDS.NEW_INTEGRATION:
         {
-          _this.insertIntegration(false, chat_id, session, spaceWikiName, spaceName);
+          _this.insertIntegration(false, chat_id, session, projectId, projectFullName);
           break;
         }
       case utils.COMMANDS.DELETE_INTEGRATION:
         {
-          var integrationId = spaceWikiName;
-          _this.deleteIntegration(false, chat_id, session, integrationId, spaceName);
+          _this.deleteIntegration(false, chat_id, session, projectId, projectFullName);
           break;
         }
     }
@@ -189,7 +181,6 @@ var BotOperations = exports.BotOperations = function BotOperations() {
     };
     request(opts, function (error, response, groups) {
       groups = JSON.parse(groups);
-      console.log(groups);
       if (groups.error) {
         if (isSkype) {
           session.send(utils.MESSAGE.INVALID_TOKEN);
@@ -197,33 +188,31 @@ var BotOperations = exports.BotOperations = function BotOperations() {
           telegramBot.sendMessage(chatId, utils.MESSAGE.INVALID_TOKEN);
         }
       } else {
-        var telegramProjects = [];
-        var skypeProjects = {};
-        // for (let i = 0; i < responseBody.length; i++) {
-        //   const { wiki_name, name } = responseBody[i]
-        //   const callback_data = JSON.stringify([wiki_name, name]);
-        //   console.log("Wiki Name: ", wiki_name)
-        //   telegramProjects.push([{ text: name, callback_data }])
-        //   skypeProjects[name] = { spaceWikiName: wiki_name, spaceName: name }
-        // }
+        var requests = groups.map(function (group) {
+          return request.get(utils.GITLAB_URL + '/groups/' + group.id + '/projects', { auth: { bearer: access_token } });
+        });
 
-        Promise.all(groups.map(function (group) {
-          request.get(utils.GITLAB_URL + '/groups/' + group.id + '/projects', { auth: { bearer: access_token } });
-        })).on('response', function (resArray) {
-          console.log('responseArray++++', resArray);
-          resArray.map(function (res) {
-            var projectId = res.id,
-                projectName = res.name,
-                name_with_namespace = res.name_with_namespace,
-                _res$nameSpace = res.nameSpace,
-                groupId = _res$nameSpace.id,
-                groupName = _res$nameSpace.name;
+        Promise.all(requests).then(function (responses) {
+          var telegramProjects = [];
+          var skypeProjects = {};
+          responses.map(function (response) {
+            var projects = JSON.parse(response);
+            projects.map(function (project) {
+              console.log("+++project fetched: ", project.name);
+              var projectId = project.id,
+                  projectName = project.name,
+                  projectFullName = project.name_with_namespace,
+                  _project$namespace = project.namespace,
+                  groupId = _project$namespace.id,
+                  groupName = _project$namespace.name;
 
-            var callback_data = JSON.stringify([projectId, name_with_namespace]);
-            telegramProjects.push([{ text: name_with_namespace, callback_data: callback_data }]);
+              var callback_data = JSON.stringify([projectId, projectFullName]);
+              telegramProjects.push([{ text: projectFullName, callback_data: callback_data }]);
+              skypeProjects[projectId] = { projectId: projectId, projectFullName: projectFullName };
+            });
           });
           if (isSkype) {
-            session.beginDialog('askSpaceIntegrate', { spaces: skypeProjects });
+            session.beginDialog('askSpaceIntegrate', { projects: skypeProjects });
           } else {
             var _opts = {
               reply_to_message_id: session.message_id,
@@ -232,6 +221,12 @@ var BotOperations = exports.BotOperations = function BotOperations() {
               }
             };
             telegramBot.sendMessage(chatId, utils.MESSAGE.CHOOSE_SAPCE_INTEGRATE, _opts);
+          }
+        }).catch(function (errors) {
+          if (isSkype) {
+            session.send(utils.MESSAGE.INVALID_TOKEN);
+          } else {
+            telegramBot.sendMessage(chatId, utils.MESSAGE.INVALID_TOKEN);
           }
         });
       }
@@ -275,8 +270,8 @@ var BotOperations = exports.BotOperations = function BotOperations() {
       if (integrations !== null) {
         var integrationStr = '';
         for (var i = 0; i < integrations.length; i++) {
-          console.log(integrations[i].dataValues.spaceName);
-          integrationStr += i + 1 + '. ' + integrations[i].dataValues.spaceName + '\n';
+          console.log(integrations[i].dataValues.projectFullName);
+          integrationStr += i + 1 + '. ' + integrations[i].dataValues.projectFullName + '\n';
         }
         var message = integrationStr ? utils.MESSAGE.LIST_INTEGRATION + integrationStr : utils.MESSAGE.NOTHING_INTEGRATED;
 
@@ -297,17 +292,17 @@ var BotOperations = exports.BotOperations = function BotOperations() {
         var skypeProjects = {};
         for (var i = 0; i < integrations.length; i++) {
           var _integrations$i$dataV = integrations[i].dataValues,
-              integrationId = _integrations$i$dataV.id,
-              spaceName = _integrations$i$dataV.spaceName;
+              projectId = _integrations$i$dataV.projectId,
+              projectFullName = _integrations$i$dataV.projectFullName;
 
-          var callback_data = JSON.stringify([integrationId, spaceName]);
+          var callback_data = JSON.stringify([projectId, projectFullName]);
 
-          telegramProjects.push([{ text: spaceName, callback_data: callback_data }]);
-          skypeProjects[spaceName] = { integrationId: integrationId, spaceName: spaceName };
+          telegramProjects.push([{ text: projectFullName, callback_data: callback_data }]);
+          skypeProjects[projectId] = { projectId: projectId, projectFullName: projectFullName };
         }
 
         if (isSkype) {
-          session.beginDialog('askSpaceDelete', { spaces: skypeProjects });
+          session.beginDialog('askSpaceDelete', { projects: skypeProjects });
         } else {
           var reply_to_message_id = (0, _lodash.get)(session, 'message_id', 0);
           var opts = {

@@ -2,7 +2,7 @@ import * as utils from './utils'
 import models from './models'
 import {TelegramBot} from './TelegramBot'
 
-const request = require('request');
+const request = require('request-promise');
 const oauth2 = require('simple-oauth2').create(utils.GITLAB_CREDENTIALS)
 const telegramBot = new TelegramBot()
 import {get, unescape, words, without} from "lodash"
@@ -61,22 +61,18 @@ export class BotOperations {
     }
   }
 
-  insertIntegration = (isSkype, chatId, session, spaceWikiName, spaceName) => {
+  insertIntegration = (isSkype, chatId, session, projectId, projectFullName) => {
+    const opts = !isSkype && { chat_id: chatId, message_id: session.message_id }
 
-    let opts = {}
-    if (!isSkype) {
-      opts = {chat_id: chatId, message_id: session.message_id}
-    }
-
-    models.Integration.findOne({where: {chatId, spaceWikiName}})
+    models.Integration.findOne({where: {chatId, projectId}})
       .then(res => {
         if (res === null) {
-          models.Integration.create({spaceWikiName, spaceName, chatId})
+          models.Integration.create({ projectId, projectFullName, chatId })
             .then(res => {
               if (isSkype) {
-                session.send(`"${spaceName}"` + utils.MESSAGE.SPACE_INTEGRATED)
+                session.send(`"${projectFullName}"` + utils.MESSAGE.SPACE_INTEGRATED)
               } else {
-                telegramBot.editMessageText(`"${spaceName}"` + utils.MESSAGE.SPACE_INTEGRATED, opts);
+                telegramBot.editMessageText(`"${projectFullName}"` + utils.MESSAGE.SPACE_INTEGRATED, opts);
               }
             })
             .catch(err => {
@@ -97,19 +93,16 @@ export class BotOperations {
 
   }
 
-  deleteIntegration = (isSkype, chatId, session, integrationId, spaceName) => {
-    let opts = {}
-    if (!isSkype) {
-      opts = { chat_id: chatId, message_id: session.message_id }
-    }
+  deleteIntegration = (isSkype, chatId, session, projectId, projectFullName) => {
+    const opts = !isSkype && { chat_id: chatId, message_id: session.message_id }
 
-    models.Integration.destroy({where: {id: integrationId}})
+    models.Integration.destroy({where: { projectId }})
       .then(res => {
         if (res >= 1) {
           if (isSkype) {
-            session.send(`"${spaceName}"` + utils.MESSAGE.SPACE_DELETED)
+            session.send(`"${projectFullName}"` + utils.MESSAGE.SPACE_DELETED)
           } else {
-            telegramBot.editMessageText(`"${spaceName}"` + utils.MESSAGE.SPACE_DELETED, opts);
+            telegramBot.editMessageText(`"${projectFullName}"` + utils.MESSAGE.SPACE_DELETED, opts);
           }
         } else {
           if (isSkype) {
@@ -132,22 +125,21 @@ export class BotOperations {
     const session = callbackQuery.message;
     const chat_id = session.chat.id + '';
     const data = JSON.parse(callbackQuery.data);
-    const spaceWikiName = data[0]
-    const spaceName = data[1]
+    const projectId = data[0]
+    const projectFullName = data[1]
 
     const { text } = session.reply_to_message;
-    const command = without(words(text), 'Assembla', 'Bot')[0]
+    const command = without(words(text), 'GitLab', 'Bot')[0]
 
     console.log("Command: ", command)
 
     switch (command) {
       case utils.COMMANDS.NEW_INTEGRATION: {
-        this.insertIntegration(false, chat_id, session, spaceWikiName, spaceName);
+        this.insertIntegration(false, chat_id, session, projectId, projectFullName);
         break;
       }
       case utils.COMMANDS.DELETE_INTEGRATION: {
-        const integrationId = spaceWikiName
-        this.deleteIntegration(false, chat_id, session, integrationId, spaceName)
+        this.deleteIntegration(false, chat_id, session, projectId, projectFullName)
         break;
       }
     }
@@ -163,7 +155,6 @@ export class BotOperations {
     }
     request(opts, (error, response, groups) => {
       groups = JSON.parse(groups)
-      console.log(groups)
       if (groups.error) {
         if (isSkype) {
           session.send(utils.MESSAGE.INVALID_TOKEN)
@@ -171,37 +162,48 @@ export class BotOperations {
           telegramBot.sendMessage(chatId, utils.MESSAGE.INVALID_TOKEN);
         }
       } else {
-        const telegramProjects = []
-        const skypeProjects = {}
-        // for (let i = 0; i < responseBody.length; i++) {
-        //   const { wiki_name, name } = responseBody[i]
-        //   const callback_data = JSON.stringify([wiki_name, name]);
-        //   console.log("Wiki Name: ", wiki_name)
-        //   telegramProjects.push([{ text: name, callback_data }])
-        //   skypeProjects[name] = { spaceWikiName: wiki_name, spaceName: name }
-        // }
+        const requests = groups.map(group =>
+          request.get(`${utils.GITLAB_URL}/groups/${group.id}/projects`, {auth: {bearer: access_token}})
+        )
 
-        Promise.all(groups.map(group => {
-          request.get(`${utils.GITLAB_URL}/groups/${group.id}/projects`,{auth: { bearer: access_token }})
-        })).on('response', resArray => {
-          console.log('responseArray++++', resArray)
-          resArray.map(res => {
-            const { id: projectId, name: projectName, name_with_namespace, nameSpace: { id: groupId, name: groupName } } = res
-            const callback_data = JSON.stringify([projectId, name_with_namespace]);
-            telegramProjects.push([{ text: name_with_namespace, callback_data }])
-          })
-        if (isSkype) {
-          session.beginDialog('askSpaceIntegrate', {spaces: skypeProjects});
-        } else {
-          const opts = {
-            reply_to_message_id: session.message_id,
-            reply_markup: {
-              inline_keyboard: telegramProjects
+        Promise.all(requests)
+          .then(responses => {
+            const telegramProjects = []
+            const skypeProjects = {}
+            responses.map(response => {
+              const projects = JSON.parse(response)
+              projects.map(project => {
+                console.log("+++project fetched: ", project.name)
+                const {
+                  id: projectId,
+                  name: projectName,
+                  name_with_namespace: projectFullName,
+                  namespace: { id: groupId, name: groupName }
+                } = project
+                const callback_data = JSON.stringify([projectId, projectFullName]);
+                telegramProjects.push([{text: projectFullName, callback_data}])
+                skypeProjects[projectId] = { projectId, projectFullName }
+              })
+            })
+            if (isSkype) {
+              session.beginDialog('askSpaceIntegrate', {projects: skypeProjects});
+            } else {
+              const opts = {
+                reply_to_message_id: session.message_id,
+                reply_markup: {
+                  inline_keyboard: telegramProjects
+                }
+              };
+              telegramBot.sendMessage(chatId, utils.MESSAGE.CHOOSE_SAPCE_INTEGRATE, opts);
             }
-          };
-          telegramBot.sendMessage(chatId, utils.MESSAGE.CHOOSE_SAPCE_INTEGRATE, opts);
-        }
-        })
+          })
+          .catch(errors => {
+            if (isSkype) {
+              session.send(utils.MESSAGE.INVALID_TOKEN)
+            } else {
+              telegramBot.sendMessage(chatId, utils.MESSAGE.INVALID_TOKEN);
+            }
+          })
       }
     });
   }
@@ -228,7 +230,7 @@ export class BotOperations {
     models.Chat.findOne({where: {chatId}})
       .then( chat => {
         const {access_token, refresh_token} = get(chat, 'dataValues', '')
-          this.fetchProjects(isSkype, chatId, session, access_token)
+        this.fetchProjects(isSkype, chatId, session, access_token)
       })
   }
 
@@ -238,8 +240,8 @@ export class BotOperations {
         if (integrations !== null) {
           let integrationStr = ''
           for (let i = 0; i < integrations.length; i++) {
-            console.log(integrations[i].dataValues.spaceName)
-            integrationStr += `${(i+1)}. ${integrations[i].dataValues.spaceName}\n`
+            console.log(integrations[i].dataValues.projectFullName)
+            integrationStr += `${(i+1)}. ${integrations[i].dataValues.projectFullName}\n`
           }
           const message = integrationStr ? utils.MESSAGE.LIST_INTEGRATION + integrationStr
             : utils.MESSAGE.NOTHING_INTEGRATED
@@ -261,15 +263,15 @@ export class BotOperations {
           const telegramProjects = []
           const skypeProjects = {}
           for (let i = 0; i < integrations.length; i++) {
-            const {id: integrationId, spaceName} = integrations[i].dataValues
-            const callback_data = JSON.stringify([integrationId, spaceName]);
+            const {projectId, projectFullName} = integrations[i].dataValues
+            const callback_data = JSON.stringify([projectId, projectFullName]);
 
-            telegramProjects.push([{text: spaceName, callback_data}])
-            skypeProjects[spaceName] = { integrationId, spaceName }
+            telegramProjects.push([{text: projectFullName, callback_data}])
+            skypeProjects[projectId] = { projectId, projectFullName }
           }
 
           if (isSkype) {
-            session.beginDialog('askSpaceDelete', { spaces: skypeProjects })
+            session.beginDialog('askSpaceDelete', { projects: skypeProjects })
           } else {
             const reply_to_message_id = get(session, 'message_id', 0)
             const opts = {

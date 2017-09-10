@@ -1,8 +1,8 @@
 export const GITLAB_URL = 'https://gitlab.com/api/v4'
 export const BASE_URL = 'https://gitlab-bot-server.herokuapp.com'
 export const AUTH_CALLBACK_ENDPOINT = '/auth-callback'
-export const TELEGRAM_TOKEN = '390407644:AAF5qrrLrku8zMel5lHUKF1czBv5kyQrhJY'
-// export const TELEGRAM_TOKEN = '407191495:AAFvFL2_KtFmo7QlcPzV7bJR-14YYBxTbXo'
+// export const TELEGRAM_TOKEN = '390407644:AAF5qrrLrku8zMel5lHUKF1czBv5kyQrhJY'
+export const TELEGRAM_TOKEN = '407191495:AAFvFL2_KtFmo7QlcPzV7bJR-14YYBxTbXo'
 export const TELEGRAM_BOT_URL = 'https://t.me/MrGitLabBot/'
 export const SKYPE_BOT_URL = 'https://join.skype.com/bot/8864cf5d-3c38-457f-976f-cfb07dd93c7f'
 export const CONVERSATION_ID = '19:978ea7f80ded467695613d0813126361@thread.skype'
@@ -84,9 +84,9 @@ export const MESSAGE = {
   NOT_AUTHORIZED: `Bot don't have access to your GitLab Projects.\n\nUse /connect to authorize bot via OAuth.`,
   INVALID_TOKEN: `Access token is invalid or expired.`,
   SPACE_ALREADY_EXIST: "Project already integrated in this chat.",
-  SPACE_INTEGRATED: " space integrated successfully.",
-  SPACE_DELETED: " space deleted from this chat.",
-  LIST_INTEGRATION:'Following spaces are integrated:\n',
+  SPACE_INTEGRATED: " project integrated successfully.",
+  SPACE_DELETED: " project deleted from this chat.",
+  LIST_INTEGRATION:'Following projects are integrated:\n',
   DATABASE_ERROR: "Process failed! Try again later.",
   INTRODUCE_BOT: `I'm a GitLab bot. I'll send notifications of activities in a project.\n\nAvailable commands:
   /connect - Authorize bot via OAuth

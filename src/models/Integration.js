@@ -1,7 +1,7 @@
 module.exports = (sequelize, DataTypes) => {
   const Integration = sequelize.define('integration', {
-    spaceWikiName: DataTypes.STRING,
-    spaceName: DataTypes.STRING
+    projectId: DataTypes.STRING,
+    projectFullName: DataTypes.STRING
   }, {
     timestamps: false
   });

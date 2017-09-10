@@ -66,35 +66,35 @@ var skypeBot = new builder.UniversalBot(connector, function (session) {
 });
 
 skypeBot.dialog('askSpaceIntegrate', [function (session, args) {
-  session.dialogData.spaces = args.spaces;
-  builder.Prompts.choice(session, _utils.MESSAGE.CHOOSE_SAPCE_INTEGRATE, args.spaces);
+  session.dialogData.projects = args.projects;
+  builder.Prompts.choice(session, _utils.MESSAGE.CHOOSE_SAPCE_INTEGRATE, args.projects);
 }, function (session, results) {
   var _results$response = results.response,
       index = _results$response.index,
       entity = _results$response.entity;
-  var _session$dialogData$s = session.dialogData.spaces[entity],
-      spaceWikiName = _session$dialogData$s.spaceWikiName,
-      spaceName = _session$dialogData$s.spaceName;
+  var _session$dialogData$p = session.dialogData.projects[entity],
+      projectId = _session$dialogData$p.projectId,
+      projectFullName = _session$dialogData$p.projectFullName;
   var chatId = session.message.address.conversation.id;
 
 
-  botOperations.insertIntegration(true, chatId, session, spaceWikiName, spaceName);
+  botOperations.insertIntegration(true, chatId, session, projectId, projectFullName);
 }]);
 
 skypeBot.dialog('askSpaceDelete', [function (session, args) {
-  session.dialogData.spaces = args.spaces;
-  builder.Prompts.choice(session, _utils.MESSAGE.CHOOSE_SAPCE_DELETE, args.spaces);
+  session.dialogData.projects = args.projects;
+  builder.Prompts.choice(session, _utils.MESSAGE.CHOOSE_SAPCE_DELETE, args.projects);
 }, function (session, results) {
   var _results$response2 = results.response,
       index = _results$response2.index,
       entity = _results$response2.entity;
-  var _session$dialogData$s2 = session.dialogData.spaces[entity],
-      integrationId = _session$dialogData$s2.integrationId,
-      spaceName = _session$dialogData$s2.spaceName;
+  var _session$dialogData$p2 = session.dialogData.projects[entity],
+      projectId = _session$dialogData$p2.projectId,
+      projectFullName = _session$dialogData$p2.projectFullName;
   var chatId = session.message.address.conversation.id;
 
 
-  botOperations.deleteIntegration(true, chatId, session, integrationId, spaceName);
+  botOperations.deleteIntegration(true, chatId, session, projectId, projectFullName);
 }]);
 
 app.post('/webhook', function (req, res) {

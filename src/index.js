@@ -44,27 +44,27 @@ const skypeBot = new builder.UniversalBot(connector, (session) => {
 
 skypeBot.dialog('askSpaceIntegrate', [
   (session, args) => {
-    session.dialogData.spaces = args.spaces
-    builder.Prompts.choice(session, MESSAGE.CHOOSE_SAPCE_INTEGRATE, args.spaces);
+    session.dialogData.projects = args.projects
+    builder.Prompts.choice(session, MESSAGE.CHOOSE_SAPCE_INTEGRATE, args.projects);
   }, (session, results) => {
     const { index, entity } = results.response
-    const { spaceWikiName, spaceName } = session.dialogData.spaces[entity]
+    const { projectId, projectFullName } = session.dialogData.projects[entity]
     const { id: chatId } = session.message.address.conversation
 
-    botOperations.insertIntegration(true, chatId, session, spaceWikiName, spaceName)
+    botOperations.insertIntegration(true, chatId, session, projectId, projectFullName)
   }
 ]);
 
 skypeBot.dialog('askSpaceDelete', [
   (session, args) => {
-    session.dialogData.spaces = args.spaces
-    builder.Prompts.choice(session, MESSAGE.CHOOSE_SAPCE_DELETE, args.spaces);
+    session.dialogData.projects = args.projects
+    builder.Prompts.choice(session, MESSAGE.CHOOSE_SAPCE_DELETE, args.projects);
   }, (session, results) => {
     const { index, entity } = results.response
-    const { integrationId, spaceName } = session.dialogData.spaces[entity]
+    const { projectId, projectFullName } = session.dialogData.projects[entity]
     const { id: chatId } = session.message.address.conversation
 
-    botOperations.deleteIntegration(true, chatId, session, integrationId, spaceName)
+    botOperations.deleteIntegration(true, chatId, session, projectId, projectFullName)
   }
 ]);
 

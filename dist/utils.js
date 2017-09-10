@@ -6,8 +6,8 @@ Object.defineProperty(exports, "__esModule", {
 var GITLAB_URL = exports.GITLAB_URL = 'https://gitlab.com/api/v4';
 var BASE_URL = exports.BASE_URL = 'https://gitlab-bot-server.herokuapp.com';
 var AUTH_CALLBACK_ENDPOINT = exports.AUTH_CALLBACK_ENDPOINT = '/auth-callback';
-var TELEGRAM_TOKEN = exports.TELEGRAM_TOKEN = '390407644:AAF5qrrLrku8zMel5lHUKF1czBv5kyQrhJY';
-// export const TELEGRAM_TOKEN = '407191495:AAFvFL2_KtFmo7QlcPzV7bJR-14YYBxTbXo'
+// export const TELEGRAM_TOKEN = '390407644:AAF5qrrLrku8zMel5lHUKF1czBv5kyQrhJY'
+var TELEGRAM_TOKEN = exports.TELEGRAM_TOKEN = '407191495:AAFvFL2_KtFmo7QlcPzV7bJR-14YYBxTbXo';
 var TELEGRAM_BOT_URL = exports.TELEGRAM_BOT_URL = 'https://t.me/MrGitLabBot/';
 var SKYPE_BOT_URL = exports.SKYPE_BOT_URL = 'https://join.skype.com/bot/8864cf5d-3c38-457f-976f-cfb07dd93c7f';
 var CONVERSATION_ID = exports.CONVERSATION_ID = '19:978ea7f80ded467695613d0813126361@thread.skype';
@@ -89,9 +89,9 @@ var MESSAGE = exports.MESSAGE = {
   NOT_AUTHORIZED: 'Bot don\'t have access to your GitLab Projects.\n\nUse /connect to authorize bot via OAuth.',
   INVALID_TOKEN: 'Access token is invalid or expired.',
   SPACE_ALREADY_EXIST: "Project already integrated in this chat.",
-  SPACE_INTEGRATED: " space integrated successfully.",
-  SPACE_DELETED: " space deleted from this chat.",
-  LIST_INTEGRATION: 'Following spaces are integrated:\n',
+  SPACE_INTEGRATED: " project integrated successfully.",
+  SPACE_DELETED: " project deleted from this chat.",
+  LIST_INTEGRATION: 'Following projects are integrated:\n',
   DATABASE_ERROR: "Process failed! Try again later.",
   INTRODUCE_BOT: 'I\'m a GitLab bot. I\'ll send notifications of activities in a project.\n\nAvailable commands:\n  /connect - Authorize bot via OAuth\n  /newintegration - Add integration with a GitHub repository\n  /listintegrations - List all current integrations\n  /delintegration - Delete integration\n  /help - List available commands\n  /cancel - Cancel the current command'
 };
