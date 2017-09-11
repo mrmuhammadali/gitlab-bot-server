@@ -1,0 +1,8 @@
+export const Push_Hook = 'Push Hook'
+export const Tag_Push_Hook = 'Tag Push Hook'
+export const Issue_Hook = 'Issue Hook'
+export const Note_Hook = 'Note Hook'
+export const Merge_Request_Hook = 'Merge Request Hook'
+export const Wiki_Page_Hook = 'Wiki Page Hook'
+export const Pipeline_Hook = 'Pipeline Hook'
+export const Build_Hook = 'Build Hook'

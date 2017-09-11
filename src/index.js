@@ -1,9 +1,10 @@
 const bodyParser = require('body-parser')
 const express = require('express')
 const builder = require('botbuilder')
-import unescape from 'lodash/unescape'
+import { lowerCase, unescape, upperCase } from 'lodash'
 
 import * as routes from './routes'
+import * as eventTypes from './eventTypes'
 import models from './models'
 import { TELEGRAM_BOT_URL, SKYPE_ADDRESS, SKYPE_CREDENTIALS, MESSAGE, AUTH_CALLBACK_ENDPOINT } from './utils'
 import { TelegramBot } from './TelegramBot'
@@ -73,41 +74,78 @@ telegramBot.on('callback_query',  (callbackQuery) => {
 });
 
 app.post('/webhook', (req, res) => {
-  console.log("++Webhook Request: ", req)
-  const {
-    object_kind: objectKind,
-    user_id: userId,
-    user_name: name,
-    user_username: username,
-    project_id: projectId,
-    project: { path_with_namespace: projectFullPath },
-    repository: { name: repositoryName },
-    commits,
-    total_commits_count: totalCommitsCount
-  } = req.body
+  const event = req.headers["x-gitlab-event"]
+  let str = ''
+  let projectId = 0
 
-  const str = unescape(`${object}:\n${author} ${action} '${title}' in '${space}'`)
+  switch(event) {
+    case eventTypes.Push_Hook:
+    case eventTypes.Tag_Push_Hook: {
+      const {
+        object_kind: objectKind,
+        user_name: name,
+        user_username: username,
+        project_id,
+        project: { path_with_namespace: projectFullPath },
+        commits,
+        total_commits_count: totalCommitsCount
+      } = req.body
 
-  models.Integration.findAll({where: {projectId}})
+      projectId = project_id
+      str = `${upperCase(objectKind)}: \n${name} @${username} ${lowerCase(objectKind)}ed ${totalCommitsCount} in ${projectFullPath}.`
+      str += event === eventTypes.Push_Hook ? `\nCommits: \n` : ''
+      commits.map((commit, index) => {
+        const { id, message, author: { name } } = commit
+        str += `  ${index + 1}. ${name} committed ${message}\n`
+      })
+      break
+    }
+
+    case eventTypes.Issue_Hook: {
+      const {
+        user: { name, username },
+        project: { path_with_namespace: projectFullPath },
+        object_attributes: { title,  project_id, description, state, action, weight, due_date, url },
+        assignees,
+        assignee: { name: assigneeName, username: assigneeUsername }
+      } = req.body
+
+      projectId = project_id
+      str = `ISSUE: 
+      Created By: ${name} @${username} in ${projectFullPath} 
+      Title: ${title} 
+      Due Date: ${due_date} 
+      Weight: ${weight} 
+      State: ${state} 
+      URL: ${url} 
+      Assigned By: ${assigneeName} @${assigneeUsername} 
+      Assigned To: \n`
+      assignees.map(({ name, username }, index) => str += `  ${index + 1}. ${name} @${username}`)
+      break
+    }
+  }
+
+  projectId && models.Integration.findAll({where: {projectId}})
     .then(integrations => {
       if (integrations !== null) {
-        integrations.map(({ dataValues: integration }) => {
-          const { projectFullName, chatId } = integration
-          console.log(chatId + ": ", projectFullName)
+        integrations.map(({ dataValues: { chatId } }) => {
+          console.log(chatId + ": ", projectId)
+
           if (/[a-z]/.test(chatId)) {
             const address = { ...SKYPE_ADDRESS, conversation: { id: chatId } }
             const reply = new builder.Message()
               .address(address)
-              .text(str)
+              .text(unescape(str))
+
             skypeBot.send(reply)
           } else {
-            telegramBot.sendMessage(chatId, str)
+            telegramBot.sendMessage(chatId, unescape(str))
           }
         })
       }
     })
 
-  res.json({ project_id: projectId, success: true })
+  res.json({ project_id: projectId, success: projectId !== 0 })
 })
 
 app.listen(process.env.PORT || 3030, () => {
