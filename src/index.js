@@ -1,6 +1,6 @@
-const bodyParser = require('body-parser');
-const express = require('express');
-const builder = require('botbuilder');
+const bodyParser = require('body-parser')
+const express = require('express')
+const builder = require('botbuilder')
 import unescape from 'lodash/unescape'
 
 import * as routes from './routes'

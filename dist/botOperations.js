@@ -269,11 +269,11 @@ var BotOperations = exports.BotOperations = function BotOperations() {
     _models2.default.Integration.findAll({ where: { chatId: chatId } }).then(function (integrations) {
       if (integrations !== null) {
         var integrationStr = '';
-        integrations.map(function (_ref) {
+        integrations.map(function (_ref, index) {
           var integration = _ref.dataValues;
 
           console.log(integration.projectFullName);
-          integrationStr += i + 1 + '. ' + integration.projectFullName + '\n';
+          integrationStr += index + 1 + '. ' + integration.projectFullName + '\n';
         });
         var message = integrationStr ? utils.MESSAGE.LIST_INTEGRATION + integrationStr : utils.MESSAGE.NOTHING_INTEGRATED;
 

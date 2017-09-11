@@ -240,9 +240,9 @@ export class BotOperations {
       .then(integrations => {
         if (integrations !== null) {
           let integrationStr = ''
-          integrations.map(({dataValues: integration}) => {
+          integrations.map(({dataValues: integration}, index) => {
             console.log(integration.projectFullName)
-            integrationStr += `${(i+1)}. ${integration.projectFullName}\n`
+            integrationStr += `${(index+1)}. ${integration.projectFullName}\n`
           })
           const message = integrationStr ? utils.MESSAGE.LIST_INTEGRATION + integrationStr
             : utils.MESSAGE.NOTHING_INTEGRATED
