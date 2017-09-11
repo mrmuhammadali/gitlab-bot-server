@@ -123,7 +123,7 @@ var BotOperations = exports.BotOperations = function BotOperations() {
   this.deleteIntegration = function (isSkype, chatId, session, projectId, projectFullName) {
     var opts = !isSkype && { chat_id: chatId, message_id: session.message_id };
 
-    _models2.default.Integration.destroy({ where: { projectId: projectId } }).then(function (res) {
+    _models2.default.Integration.destroy({ where: { projectId: projectId, chatId: chatId } }).then(function (res) {
       if (res >= 1) {
         if (isSkype) {
           session.send('"' + projectFullName + '"' + utils.MESSAGE.SPACE_DELETED);

@@ -96,7 +96,7 @@ export class BotOperations {
   deleteIntegration = (isSkype, chatId, session, projectId, projectFullName) => {
     const opts = !isSkype && { chat_id: chatId, message_id: session.message_id }
 
-    models.Integration.destroy({where: { projectId }})
+    models.Integration.destroy({where: { projectId, chatId }})
       .then(res => {
         if (res >= 1) {
           if (isSkype) {
