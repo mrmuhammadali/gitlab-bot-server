@@ -126,7 +126,7 @@ app.post('/webhook', function (req, res) {
 
 
         projectId = project_id;
-        str = (0, _lodash.upperCase)(objectKind) + ': \n' + name + ' @' + username + ' ' + (0, _lodash.lowerCase)(objectKind) + 'ed ' + totalCommitsCount + ' in ' + projectFullPath + '.';
+        str = (0, _lodash.upperCase)(objectKind) + ': \n' + name + ' @' + username + ' ' + (0, _lodash.lowerCase)(objectKind) + 'ed ' + (totalCommitsCount ? totalCommitsCount + ' commits' : '') + ' in ' + projectFullPath + '.';
         str += event === eventTypes.Push_Hook ? '\nCommits: \n' : '';
         commits.map(function (commit, index) {
           var id = commit.id,

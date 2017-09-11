@@ -93,7 +93,7 @@ app.post('/webhook', (req, res) => {
       } = req.body
 
       projectId = project_id
-      str = `${upperCase(objectKind)}: \n${name} @${username} ${lowerCase(objectKind)}ed ${totalCommitsCount} in ${projectFullPath}.`
+      str = `${upperCase(objectKind)}: \n${name} @${username} ${lowerCase(objectKind)}ed ${totalCommitsCount ? `${totalCommitsCount} commits` : ''} in ${projectFullPath}.`
       str += event === eventTypes.Push_Hook ? `\nCommits: \n` : ''
       commits.map((commit, index) => {
         const { id, message, author: { name } } = commit
