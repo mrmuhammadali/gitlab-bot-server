@@ -1,5 +1,7 @@
 'use strict';
 
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
 var _unescape = require('lodash/unescape');
 
 var _unescape2 = _interopRequireDefault(_unescape);
@@ -102,45 +104,41 @@ telegramBot.on('callback_query', function (callbackQuery) {
 });
 
 app.post('/webhook', function (req, res) {
-  console.log("++Webhook Response: ", req.body);
+  console.log("++Webhook Request: ", req);
   var _req$body = req.body,
-      spaceWikiName = _req$body.spaceWikiName,
-      author = _req$body.author,
-      object = _req$body.object,
-      space = _req$body.space,
-      action = _req$body.action,
-      title = _req$body.title,
-      body = _req$body.body,
-      link = _req$body.link,
-      repositoryUrl = _req$body.repositoryUrl,
-      repositorySuffix = _req$body.repositorySuffix,
-      branch = _req$body.branch,
-      commitId = _req$body.commitId;
+      objectKind = _req$body.object_kind,
+      userId = _req$body.user_id,
+      name = _req$body.user_name,
+      username = _req$body.user_username,
+      projectId = _req$body.project_id,
+      projectFullPath = _req$body.project.path_with_namespace,
+      repositoryName = _req$body.repository.name,
+      commits = _req$body.commits,
+      totalCommitsCount = _req$body.total_commits_count;
+
 
   var str = (0, _unescape2.default)(object + ':\n' + author + ' ' + action + ' \'' + title + '\' in \'' + space + '\'');
-  if (body.lastIndexOf('------------------------------+----------------------------------------------') > 0) {
-    str += '\n\n' + body.substr(body.lastIndexOf('------------------------------+----------------------------------------------') + 77);
-  }
-  _models2.default.Integration.findAll({ where: { spaceWikiName: spaceWikiName } }).then(function (integrations) {
-    if (integrations !== null) {
-      for (var i = 0; i < integrations.length; i++) {
-        var _integrations$i$dataV = integrations[i].dataValues,
-            _spaceWikiName = _integrations$i$dataV.spaceWikiName,
-            chatId = _integrations$i$dataV.chatId;
 
-        console.log(chatId + ": ", _spaceWikiName);
+  _models2.default.Integration.findAll({ where: { projectId: projectId } }).then(function (integrations) {
+    if (integrations !== null) {
+      integrations.map(function (_ref2) {
+        var integration = _ref2.dataValues;
+        var projectFullName = integration.projectFullName,
+            chatId = integration.chatId;
+
+        console.log(chatId + ": ", projectFullName);
         if (/[a-z]/.test(chatId)) {
-          var address = _utils.SKYPE_ADDRESS;
-          address.conversation.id = chatId;
+          var address = _extends({}, _utils.SKYPE_ADDRESS, { conversation: { id: chatId } });
           var reply = new builder.Message().address(address).text(str);
           skypeBot.send(reply);
         } else {
           telegramBot.sendMessage(chatId, str);
         }
-      }
+      });
     }
   });
-  res.json({ name: spaceWikiName });
+
+  res.json({ project_id: projectId, success: true });
 });
 
 app.listen(process.env.PORT || 3030, function () {

@@ -73,37 +73,41 @@ telegramBot.on('callback_query',  (callbackQuery) => {
 });
 
 app.post('/webhook', (req, res) => {
-  console.log("++Webhook Response: ", req.body)
+  console.log("++Webhook Request: ", req)
   const {
-    spaceWikiName, author, object, space, action, title, body,
-    link, repositoryUrl, repositorySuffix, branch, commitId
+    object_kind: objectKind,
+    user_id: userId,
+    user_name: name,
+    user_username: username,
+    project_id: projectId,
+    project: { path_with_namespace: projectFullPath },
+    repository: { name: repositoryName },
+    commits,
+    total_commits_count: totalCommitsCount
   } = req.body
-  let str = unescape(`${object}:\n${author} ${action} '${title}' in '${space}'`)
-  if (body.lastIndexOf('------------------------------+----------------------------------------------') > 0) {
-    str += '\n\n' + body.substr(
-      body.lastIndexOf('------------------------------+----------------------------------------------') + 77
-    )
-  }
-  models.Integration.findAll({where: {spaceWikiName}})
+
+  const str = unescape(`${object}:\n${author} ${action} '${title}' in '${space}'`)
+
+  models.Integration.findAll({where: {projectId}})
     .then(integrations => {
       if (integrations !== null) {
-        for (let i = 0; i < integrations.length; i++) {
-          const {spaceWikiName, chatId} = integrations[i].dataValues
-          console.log(chatId + ": ", spaceWikiName)
+        integrations.map(({ dataValues: integration }) => {
+          const { projectFullName, chatId } = integration
+          console.log(chatId + ": ", projectFullName)
           if (/[a-z]/.test(chatId)) {
-            const address = SKYPE_ADDRESS
-            address.conversation.id = chatId
+            const address = { ...SKYPE_ADDRESS, conversation: { id: chatId } }
             const reply = new builder.Message()
               .address(address)
-              .text(str);
-            skypeBot.send(reply);
+              .text(str)
+            skypeBot.send(reply)
           } else {
             telegramBot.sendMessage(chatId, str)
           }
-        }
+        })
       }
     })
-  res.json({name: spaceWikiName})
+
+  res.json({ project_id: projectId, success: true })
 })
 
 app.listen(process.env.PORT || 3030, () => {
