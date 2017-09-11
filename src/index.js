@@ -74,6 +74,7 @@ telegramBot.on('callback_query',  (callbackQuery) => {
 });
 
 app.post('/webhook', (req, res) => {
+  console.log("++++Request Body++++", req.body)
   const event = req.headers["x-gitlab-event"]
   let str = ''
   let projectId = 0
