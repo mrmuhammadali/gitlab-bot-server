@@ -98,7 +98,7 @@ app.post('/webhook', (req, res) => {
       Commits: \n` : ''
       commits.map((commit, index) => {
         const { id, message, author: { name } } = commit
-        str += `  ${index + 1}. ${message}`
+        str += ` ${index + 1}. ${message}`
       })
       break
     }
