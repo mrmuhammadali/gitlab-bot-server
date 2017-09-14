@@ -127,13 +127,13 @@ app.post('/webhook', function (req, res) {
 
         projectId = project_id;
         str = (0, _lodash.upperCase)(objectKind) + ': \n' + name + ' @' + username + ' ' + (0, _lodash.lowerCase)(objectKind) + 'ed ' + (totalCommitsCount ? totalCommitsCount + ' commits' : '') + ' in ' + projectFullPath + '.';
-        str += event === eventTypes.Push_Hook ? '\nCommits: \n' : '';
+        str += event === eventTypes.Push_Hook ? '\n      Commits: \n' : '';
         commits.map(function (commit, index) {
           var id = commit.id,
               message = commit.message,
               name = commit.author.name;
 
-          str += '  ' + (index + 1) + '. ' + name + ' committed ' + message + '\n';
+          str += ' ' + (index + 1) + '. ' + message;
         });
         break;
       }
