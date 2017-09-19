@@ -146,6 +146,7 @@ app.post('/webhook', function (req, res) {
             _username = _req$body2$user.username,
             _projectFullPath = _req$body2.project.path_with_namespace,
             _req$body2$object_att = _req$body2.object_attributes,
+            iid = _req$body2$object_att.iid,
             title = _req$body2$object_att.title,
             _project_id = _req$body2$object_att.project_id,
             description = _req$body2$object_att.description,
@@ -159,7 +160,7 @@ app.post('/webhook', function (req, res) {
 
 
         projectId = _project_id;
-        str = 'ISSUE: \n      Created By: ' + _name + ' @' + _username + ' in ' + _projectFullPath + ' \n      Title: ' + title + ' \n      Due Date: ' + due_date + ' \n      Weight: ' + weight + ' \n      State: ' + state + ' \n      URL: ' + url + ' ';
+        str = 'ISSUE #' + iid + ': \n      ' + _name + ' @' + _username + ' ' + state + ' issue in ' + _projectFullPath + '. \n      Title: ' + title + ' \n      Due Date: ' + due_date + ' \n      Weight: ' + weight + ' \n      URL: ' + url + ' ';
         str += assignees.length > 0 ? '\n      Assigned To: \n' : '';
         assignees.map(function (_ref2, index) {
           var name = _ref2.name,

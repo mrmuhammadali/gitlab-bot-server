@@ -107,17 +107,16 @@ app.post('/webhook', (req, res) => {
       const {
         user: { name, username },
         project: { path_with_namespace: projectFullPath },
-        object_attributes: { title,  project_id, description, state, action, weight, due_date, url },
+        object_attributes: { iid, title,  project_id, description, state, action, weight, due_date, url },
         assignees = []
       } = req.body
 
       projectId = project_id
-      str = `ISSUE: 
-      Created By: ${name} @${username} in ${projectFullPath} 
+      str = `ISSUE #${iid}: 
+      ${name} @${username} ${state} issue in ${projectFullPath}. 
       Title: ${title} 
       Due Date: ${due_date} 
       Weight: ${weight} 
-      State: ${state} 
       URL: ${url} `
       str += assignees.length > 0 ? `
       Assigned To: \n` : ''
