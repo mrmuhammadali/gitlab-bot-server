@@ -108,8 +108,7 @@ app.post('/webhook', (req, res) => {
         user: { name, username },
         project: { path_with_namespace: projectFullPath },
         object_attributes: { title,  project_id, description, state, action, weight, due_date, url },
-        assignees,
-        assignee: { name: assigneeName, username: assigneeUsername }
+        assignees = []
       } = req.body
 
       projectId = project_id
@@ -119,9 +118,9 @@ app.post('/webhook', (req, res) => {
       Due Date: ${due_date} 
       Weight: ${weight} 
       State: ${state} 
-      URL: ${url} 
-      Assigned By: ${assigneeName} @${assigneeUsername} 
-      Assigned To: \n`
+      URL: ${url} `
+      str += assignees.length > 0 ? `
+      Assigned To: \n` : ''
       assignees.map(({ name, username }, index) => str += `  ${index + 1}. ${name} @${username}`)
       break
     }

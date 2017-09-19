@@ -154,14 +154,13 @@ app.post('/webhook', function (req, res) {
             weight = _req$body2$object_att.weight,
             due_date = _req$body2$object_att.due_date,
             url = _req$body2$object_att.url,
-            assignees = _req$body2.assignees,
-            _req$body2$assignee = _req$body2.assignee,
-            assigneeName = _req$body2$assignee.name,
-            assigneeUsername = _req$body2$assignee.username;
+            _req$body2$assignees = _req$body2.assignees,
+            assignees = _req$body2$assignees === undefined ? [] : _req$body2$assignees;
 
 
         projectId = _project_id;
-        str = 'ISSUE: \n      Created By: ' + _name + ' @' + _username + ' in ' + _projectFullPath + ' \n      Title: ' + title + ' \n      Due Date: ' + due_date + ' \n      Weight: ' + weight + ' \n      State: ' + state + ' \n      URL: ' + url + ' \n      Assigned By: ' + assigneeName + ' @' + assigneeUsername + ' \n      Assigned To: \n';
+        str = 'ISSUE: \n      Created By: ' + _name + ' @' + _username + ' in ' + _projectFullPath + ' \n      Title: ' + title + ' \n      Due Date: ' + due_date + ' \n      Weight: ' + weight + ' \n      State: ' + state + ' \n      URL: ' + url + ' ';
+        str += assignees.length > 0 ? '\n      Assigned To: \n' : '';
         assignees.map(function (_ref2, index) {
           var name = _ref2.name,
               username = _ref2.username;
