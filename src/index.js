@@ -4,7 +4,7 @@ const builder = require('botbuilder')
 
 import * as routes from './routes'
 import models from './models'
-import { TELEGRAM_BOT_URL, SKYPE_CREDENTIALS, MESSAGE, AUTH_CALLBACK_ENDPOINT } from './utils'
+import { TELEGRAM_BOT_URL, SKYPE_CREDENTIALS, SKYPE_ADDRESS, MESSAGE, AUTH_CALLBACK_ENDPOINT } from './utils'
 import { TelegramBot } from './TelegramBot'
 import { BotOperations } from './botOperations'
 
@@ -61,6 +61,14 @@ skypeBot.dialog('askSpaceDelete', [
     botOperations.deleteIntegration(true, chatId, session, projectId, projectFullName)
   }
 ]);
+
+// const address = { ...SKYPE_ADDRESS, conversation: { id: '29:1Q4GY9DQHXFyfbdlyJCp4S5Sw2KiUbS-1c68EGArOS287_ThoI4q6zH3cVhiWSLBC' } }
+// const reply = new builder.Message()
+//   .address(address)
+//   .text(`**PUSH:**
+//   ---`)
+//
+// skypeBot.send(reply)
 
 telegramBot.onText(/\/(.+)/, (msg, match) => {
   botOperations.handleCommands(match[1], false, msg)

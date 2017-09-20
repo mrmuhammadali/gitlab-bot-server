@@ -5,7 +5,7 @@ import * as eventTypes from '../eventTypes'
 
 const builder = require('botbuilder');
 const router = require('express').Router()
-import { lowerCase, size, unescape, upperCase } from 'lodash'
+import { capitalize, lowerCase, size, startCase, unescape, upperCase } from 'lodash'
 
 const telegramBot = new TelegramBot()
 const connector = new builder.ChatConnector(utils.SKYPE_CREDENTIALS);
@@ -31,12 +31,16 @@ export default router.post('/webhook', (req, res) => {
       } = req.body
 
       projectId = project_id
-      str = `${upperCase(objectKind)}: \n${name} @${username} ${lowerCase(objectKind)}ed ${totalCommitsCount ? `${totalCommitsCount} commits` : ''} in ${projectFullPath}.`
-      str += event === eventTypes.Push_Hook ? `
-      Commits: \n` : ''
+      str = `**${upperCase(objectKind)}:**
+      ---
+      *${startCase(name)} @${username}* **${lowerCase(objectKind)}ed** ${totalCommitsCount ? `${totalCommitsCount} commits` : ''} in ${projectFullPath}.
+      ---
+      `
+      str += event === eventTypes.Push_Hook ? `Commits: 
+      ` : ''
       commits.map((commit, index) => {
         const { id, message, author: { name } } = commit
-        str += ` ${index + 1}. ${message}`
+        str += `  ${index + 1}. *${startCase(name)}* **committed** ${message}`
       })
       break
     }
@@ -50,14 +54,17 @@ export default router.post('/webhook', (req, res) => {
       } = req.body
 
       projectId = project_id
-      str = `ISSUE #${iid}: 
-      ${name} @${username} ${state} issue in ${projectFullPath}. 
-      Title: ${title} 
+      str = `**ISSUE #${iid}:**
+      ---
+      *${startCase(name)} @${username}* **${state} issue** in ${projectFullPath}. 
+      ---
+      Title: ${capitalize(title)} 
       Due Date: ${due_date} 
-      URL: ${url} `
-      str += assignees.length > 0 ? `
-      Assigned To: \n` : ''
-      assignees.map(({ name, username }, index) => str += `  ${index + 1}. ${name} @${username}`)
+      [Visit Issue](${url} "${url}")
+      `
+      str += assignees.length > 0 ? `Assigned To: 
+      ` : ''
+      assignees.map(({ name, username }, index) => str += `  ${index + 1}. ${startCase(name)} @${username}`)
       break
     }
 
@@ -74,11 +81,13 @@ export default router.post('/webhook', (req, res) => {
       projectId = project_id
 
       if (size(issue) > 0) {
-        str = `ISSUE #${iid}:
-        ${name} @${username} commented on issue #${iid} in ${projectFullPath}. 
+        str = `**ISSUE #${iid}:**
+        ---
+        *${startCase(name)} @${username}* **commented** on issue #${iid} in ${projectFullPath}.
+        ---
         Issue State: ${state} 
-        Title: ${title} 
-        URL: ${url}`
+        Title: ${capitalize(title)} 
+        [Visit Issue](${url} "${url}")`
       }
       break
     }

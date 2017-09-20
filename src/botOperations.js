@@ -33,7 +33,7 @@ export class BotOperations {
         })
 
         if (isSkype) {
-          session.send('#H3 ' + utils.MESSAGE.CONNECT + AUTHORIZATION_URI)
+          session.send(utils.MESSAGE.CONNECT + AUTHORIZATION_URI)
         } else {
           telegramBot.sendMessage(chatId, utils.MESSAGE.CONNECT + AUTHORIZATION_URI);
         }
@@ -70,7 +70,7 @@ export class BotOperations {
           models.Integration.create({ projectId, projectFullName, chatId })
             .then(res => {
               if (isSkype) {
-                session.send(`"${projectFullName}"` + utils.MESSAGE.SPACE_INTEGRATED)
+                session.send(`**${projectFullName}**` + utils.MESSAGE.SPACE_INTEGRATED)
               } else {
                 telegramBot.editMessageText(`"${projectFullName}"` + utils.MESSAGE.SPACE_INTEGRATED, opts);
               }
@@ -100,7 +100,7 @@ export class BotOperations {
       .then(res => {
         if (res >= 1) {
           if (isSkype) {
-            session.send(`"${projectFullName}"` + utils.MESSAGE.SPACE_DELETED)
+            session.send(`**${projectFullName}**` + utils.MESSAGE.SPACE_DELETED)
           } else {
             telegramBot.editMessageText(`"${projectFullName}"` + utils.MESSAGE.SPACE_DELETED, opts);
           }
@@ -129,7 +129,7 @@ export class BotOperations {
     const projectFullName = data[1]
 
     const { text } = session.reply_to_message;
-    const command = without(words(text), 'GitLab', 'Bot')[0]
+    const command = without(words(text), 'GitLab', 'Bot', 'MrGitLabBot')[0]
 
     console.log("Command: ", command)
 
@@ -219,9 +219,9 @@ export class BotOperations {
       if (token !== null) {
         token = JSON.parse(token)
         token = oauth2.accessToken.create(token)
-        const {access_token, expires_at} = {...token.token}
+        const { access_token, expires_at } = {...token.token}
         console.log("New Token: ", {...token.token})
-        models.Chat.update({access_token, expires_at}, {where: {chatId}})
+        models.Chat.update({ access_token, expires_at }, { where: {chatId} })
         this.fetchProjects(isSkype, chatId, session, access_token)
       }
     })
@@ -230,19 +230,20 @@ export class BotOperations {
   handleNewIntegration = (isSkype, chatId, session) => {
     models.Chat.findOne({where: {chatId}})
       .then( chat => {
-        const {access_token, refresh_token} = get(chat, 'dataValues', '')
+        const { access_token, refresh_token } = chat.get({plain: true})
         this.fetchProjects(isSkype, chatId, session, access_token)
       })
   }
 
   handleListIntegrations = (isSkype, chatId, session) => {
-    models.Integration.findAll({where:{chatId}})
+    models.Integration.findAll({ where:{chatId} })
       .then(integrations => {
         if (integrations !== null) {
           let integrationStr = ''
-          integrations.map(({dataValues: integration}, index) => {
-            console.log(integration.projectFullName)
-            integrationStr += `${(index+1)}. ${integration.projectFullName}\n`
+          integrations.map((integration, index) => {
+            const { projectFullName } = integration.get({plain: true})
+            console.log(projectFullName)
+            integrationStr += `${index + 1}. **${projectFullName}**\n`
           })
           const message = integrationStr ? utils.MESSAGE.LIST_INTEGRATION + integrationStr
             : utils.MESSAGE.NOTHING_INTEGRATED
@@ -263,8 +264,8 @@ export class BotOperations {
         if (integrations !== null) {
           const telegramProjects = []
           const skypeProjects = {}
-          integrations.map(({ dataValues: integration }) => {
-            const { projectId, projectFullName } = integration
+          integrations.map(integration => {
+            const { projectId, projectFullName } = integration.get({plain: true})
             const callback_data = JSON.stringify([projectId, projectFullName]);
 
             telegramProjects.push([{text: projectFullName, callback_data}])

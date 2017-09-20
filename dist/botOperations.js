@@ -60,7 +60,7 @@ var BotOperations = exports.BotOperations = function BotOperations() {
           });
 
           if (isSkype) {
-            session.send('## ' + utils.MESSAGE.CONNECT + AUTHORIZATION_URI);
+            session.send(utils.MESSAGE.CONNECT + AUTHORIZATION_URI);
           } else {
             telegramBot.sendMessage(chatId, utils.MESSAGE.CONNECT + AUTHORIZATION_URI);
           }
@@ -99,7 +99,7 @@ var BotOperations = exports.BotOperations = function BotOperations() {
       if (res === null) {
         _models2.default.Integration.create({ projectId: projectId, projectFullName: projectFullName, chatId: chatId }).then(function (res) {
           if (isSkype) {
-            session.send('"' + projectFullName + '"' + utils.MESSAGE.SPACE_INTEGRATED);
+            session.send('**' + projectFullName + '**' + utils.MESSAGE.SPACE_INTEGRATED);
           } else {
             telegramBot.editMessageText('"' + projectFullName + '"' + utils.MESSAGE.SPACE_INTEGRATED, opts);
           }
@@ -126,7 +126,7 @@ var BotOperations = exports.BotOperations = function BotOperations() {
     _models2.default.Integration.destroy({ where: { projectId: projectId, chatId: chatId } }).then(function (res) {
       if (res >= 1) {
         if (isSkype) {
-          session.send('"' + projectFullName + '"' + utils.MESSAGE.SPACE_DELETED);
+          session.send('**' + projectFullName + '**' + utils.MESSAGE.SPACE_DELETED);
         } else {
           telegramBot.editMessageText('"' + projectFullName + '"' + utils.MESSAGE.SPACE_DELETED, opts);
         }
@@ -155,7 +155,7 @@ var BotOperations = exports.BotOperations = function BotOperations() {
 
     var text = session.reply_to_message.text;
 
-    var command = (0, _lodash.without)((0, _lodash.words)(text), 'GitLab', 'Bot')[0];
+    var command = (0, _lodash.without)((0, _lodash.words)(text), 'GitLab', 'Bot', 'MrGitLabBot')[0];
 
     console.log("Command: ", command);
 
@@ -257,9 +257,9 @@ var BotOperations = exports.BotOperations = function BotOperations() {
 
   this.handleNewIntegration = function (isSkype, chatId, session) {
     _models2.default.Chat.findOne({ where: { chatId: chatId } }).then(function (chat) {
-      var _get = (0, _lodash.get)(chat, 'dataValues', ''),
-          access_token = _get.access_token,
-          refresh_token = _get.refresh_token;
+      var _chat$get = chat.get({ plain: true }),
+          access_token = _chat$get.access_token,
+          refresh_token = _chat$get.refresh_token;
 
       _this.fetchProjects(isSkype, chatId, session, access_token);
     });
@@ -269,11 +269,12 @@ var BotOperations = exports.BotOperations = function BotOperations() {
     _models2.default.Integration.findAll({ where: { chatId: chatId } }).then(function (integrations) {
       if (integrations !== null) {
         var integrationStr = '';
-        integrations.map(function (_ref, index) {
-          var integration = _ref.dataValues;
+        integrations.map(function (integration, index) {
+          var _integration$get = integration.get({ plain: true }),
+              projectFullName = _integration$get.projectFullName;
 
-          console.log(integration.projectFullName);
-          integrationStr += index + 1 + '. ' + integration.projectFullName + '\n';
+          console.log(projectFullName);
+          integrationStr += index + 1 + '. **' + projectFullName + '**\n';
         });
         var message = integrationStr ? utils.MESSAGE.LIST_INTEGRATION + integrationStr : utils.MESSAGE.NOTHING_INTEGRATED;
 
@@ -292,10 +293,10 @@ var BotOperations = exports.BotOperations = function BotOperations() {
       if (integrations !== null) {
         var telegramProjects = [];
         var skypeProjects = {};
-        integrations.map(function (_ref2) {
-          var integration = _ref2.dataValues;
-          var projectId = integration.projectId,
-              projectFullName = integration.projectFullName;
+        integrations.map(function (integration) {
+          var _integration$get2 = integration.get({ plain: true }),
+              projectId = _integration$get2.projectId,
+              projectFullName = _integration$get2.projectFullName;
 
           var callback_data = JSON.stringify([projectId, projectFullName]);
 
