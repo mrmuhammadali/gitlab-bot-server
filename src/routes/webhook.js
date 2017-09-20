@@ -5,7 +5,7 @@ import * as eventTypes from '../eventTypes'
 
 const builder = require('botbuilder');
 const router = require('express').Router()
-import { lowerCase, unescape, upperCase } from 'lodash'
+import { lowerCase, size, unescape, upperCase } from 'lodash'
 
 const telegramBot = new TelegramBot()
 const connector = new builder.ChatConnector(utils.SKYPE_CREDENTIALS);
@@ -54,11 +54,32 @@ export default router.post('/webhook', (req, res) => {
       ${name} @${username} ${state} issue in ${projectFullPath}. 
       Title: ${title} 
       Due Date: ${due_date} 
-      Weight: ${weight} 
       URL: ${url} `
       str += assignees.length > 0 ? `
       Assigned To: \n` : ''
       assignees.map(({ name, username }, index) => str += `  ${index + 1}. ${name} @${username}`)
+      break
+    }
+
+    case eventTypes.Note_Hook: {
+      const {
+        user: { name, username },
+        project_id,
+        project: { path_with_namespace: projectFullPath },
+        object_attributes: { note, noteable_type: notableType, url },
+        issue = {}
+      } = req.body
+      const { iid = -1, title = '', description = '', state = '' } = issue
+
+      projectId = project_id
+
+      if (size(issue) > 0) {
+        str = `ISSUE #${iid}:
+        ${name} @${username} commented on issue #${iid} in ${projectFullPath}. 
+        Issue State: ${state} 
+        Title: ${title} 
+        URL: ${url}`
+      }
       break
     }
   }
