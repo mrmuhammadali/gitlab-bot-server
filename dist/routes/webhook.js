@@ -89,13 +89,45 @@ exports.default = router.post('/webhook', function (req, res) {
 
 
         projectId = _project_id;
-        str = 'ISSUE #' + iid + ': \n      ' + _name + ' @' + _username + ' ' + state + ' issue in ' + _projectFullPath + '. \n      Title: ' + title + ' \n      Due Date: ' + due_date + ' \n      Weight: ' + weight + ' \n      URL: ' + url + ' ';
+        str = 'ISSUE #' + iid + ': \n      ' + _name + ' @' + _username + ' ' + state + ' issue in ' + _projectFullPath + '. \n      Title: ' + title + ' \n      Due Date: ' + due_date + ' \n      URL: ' + url + ' ';
         str += assignees.length > 0 ? '\n      Assigned To: \n' : '';
         assignees.map(function (_ref, index) {
           var name = _ref.name,
               username = _ref.username;
           return str += '  ' + (index + 1) + '. ' + name + ' @' + username;
         });
+        break;
+      }
+
+    case eventTypes.Note_Hook:
+      {
+        var _req$body3 = req.body,
+            _req$body3$user = _req$body3.user,
+            _name2 = _req$body3$user.name,
+            _username2 = _req$body3$user.username,
+            _project_id2 = _req$body3.project_id,
+            _projectFullPath2 = _req$body3.project.path_with_namespace,
+            _req$body3$object_att = _req$body3.object_attributes,
+            note = _req$body3$object_att.note,
+            notableType = _req$body3$object_att.noteable_type,
+            _url = _req$body3$object_att.url,
+            _req$body3$issue = _req$body3.issue,
+            issue = _req$body3$issue === undefined ? {} : _req$body3$issue;
+
+        var _issue$iid = issue.iid,
+            _iid = _issue$iid === undefined ? -1 : _issue$iid,
+            _issue$title = issue.title,
+            _title = _issue$title === undefined ? '' : _issue$title,
+            _issue$description = issue.description,
+            _description = _issue$description === undefined ? '' : _issue$description,
+            _issue$state = issue.state,
+            _state = _issue$state === undefined ? '' : _issue$state;
+
+        projectId = _project_id2;
+
+        if ((0, _lodash.size)(issue) > 0) {
+          str = 'ISSUE #' + _iid + ':\n        ' + _name2 + ' @' + _username2 + ' commented on issue #' + _iid + ' in ' + _projectFullPath2 + '. \n        Issue State: ' + _state + ' \n        Title: ' + _title + ' \n        URL: ' + _url;
+        }
         break;
       }
   }
