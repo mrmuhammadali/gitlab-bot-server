@@ -33,7 +33,7 @@ export class BotOperations {
         })
 
         if (isSkype) {
-          session.send(utils.MESSAGE.CONNECT + AUTHORIZATION_URI)
+          session.send('## ' + utils.MESSAGE.CONNECT + AUTHORIZATION_URI)
         } else {
           telegramBot.sendMessage(chatId, utils.MESSAGE.CONNECT + AUTHORIZATION_URI);
         }
