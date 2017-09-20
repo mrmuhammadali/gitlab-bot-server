@@ -1,6 +1,6 @@
 import * as utils from '../utils'
 import models from '../models'
-import {TelegramBot} from "../TelegramBot"
+import { TelegramBot } from "../TelegramBot"
 
 const builder = require('botbuilder');
 const router = require('express').Router()
