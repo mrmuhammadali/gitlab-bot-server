@@ -4,7 +4,7 @@ const builder = require('botbuilder')
 
 import * as routes from './routes'
 import models from './models'
-import { TELEGRAM_BOT_URL, SKYPE_CREDENTIALS, SKYPE_ADDRESS, MESSAGE, AUTH_CALLBACK_ENDPOINT } from './utils'
+import { AUTH_CALLBACK_ENDPOINT, MESSAGE, SKYPE_BOT_URL, SKYPE_CREDENTIALS } from './utils'
 import { TelegramBot } from './TelegramBot'
 import { BotOperations } from './botOperations'
 
@@ -16,13 +16,15 @@ const app = express()
   .use(AUTH_CALLBACK_ENDPOINT, routes.authCallback)
   .use("/webhook", routes.webhook)
 
-app.get('/', (req, res) => res.redirect(TELEGRAM_BOT_URL) )
+app.get('/', (req, res) =>
+  res.redirect(SKYPE_BOT_URL)
+)
 
 app.get('/get-all', (req, res) => {
-  models.Chat.findAll({ include: [models.Integration]})
+  models.Chat.findAll({ include: [models.Integration] })
     .then(chats => {
       if (chats !== null) {
-        const data = chats.map(({ dataValues }) => dataValues)
+        const data = chats.map(chat => chat.get({plain: true}))
         res.json(data);
       }
     })

@@ -59,22 +59,22 @@ exports.default = router.get('', function (req, res) {
     console.log("Token: ", token);
     console.log("Auth ChatId: ", chatId);
 
-    _models2.default.Chat.create(_extends({ chatId: chatId }, token.token)).then(function (res) {
+    _models2.default.Chat.create(_extends({ chatId: chatId }, token.token)).then(function () {
       if (isSkype) {
         reply.text(utils.MESSAGE.AUTHORIZATION_SUCCESSFUL);
         skypeBot.send(reply);
       } else {
         telegramBot.sendMessage(chatId, utils.MESSAGE.AUTHORIZATION_SUCCESSFUL);
       }
-    }).catch(function (err) {
-      _models2.default.Chat.update(token.token, { where: { chatId: chatId } }).then(function (result) {
+    }).catch(function () {
+      _models2.default.Chat.update(token.token, { where: { chatId: chatId } }).then(function () {
         if (isSkype) {
           reply.text(utils.MESSAGE.AUTHORIZATION_SUCCESSFUL);
           skypeBot.send(reply);
         } else {
           telegramBot.sendMessage(chatId, utils.MESSAGE.AUTHORIZATION_SUCCESSFUL);
         }
-      }).catch(function (err) {
+      }).catch(function () {
         if (isSkype) {
           reply.text(utils.MESSAGE.AUTHORIZATION_FAILED);
           skypeBot.send(reply);

@@ -38,8 +38,8 @@ export default router.get('', (req, res) => {
     console.log("Token: ", token)
     console.log("Auth ChatId: ", chatId)
 
-    models.Chat.create({chatId, ...token.token})
-      .then(res => {
+    models.Chat.create({ chatId, ...token.token })
+      .then(() => {
         if (isSkype) {
           reply.text(utils.MESSAGE.AUTHORIZATION_SUCCESSFUL)
           skypeBot.send(reply)
@@ -47,9 +47,9 @@ export default router.get('', (req, res) => {
           telegramBot.sendMessage(chatId, utils.MESSAGE.AUTHORIZATION_SUCCESSFUL)
         }
       })
-      .catch(err => {
+      .catch(() => {
         models.Chat.update(token.token, { where: { chatId } })
-          .then(result => {
+          .then(() => {
             if (isSkype) {
               reply.text(utils.MESSAGE.AUTHORIZATION_SUCCESSFUL)
               skypeBot.send(reply)
@@ -57,7 +57,7 @@ export default router.get('', (req, res) => {
               telegramBot.sendMessage(chatId, utils.MESSAGE.AUTHORIZATION_SUCCESSFUL)
             }
           })
-          .catch(err => {
+          .catch(() => {
             if (isSkype) {
               reply.text(utils.MESSAGE.AUTHORIZATION_FAILED)
               skypeBot.send(reply)

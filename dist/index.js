@@ -28,15 +28,14 @@ var connector = new builder.ChatConnector(_utils.SKYPE_CREDENTIALS);
 var app = express().use(bodyParser.json()).use(_utils.AUTH_CALLBACK_ENDPOINT, routes.authCallback).use("/webhook", routes.webhook);
 
 app.get('/', function (req, res) {
-  return res.redirect(_utils.TELEGRAM_BOT_URL);
+  return res.redirect(_utils.SKYPE_BOT_URL);
 });
 
 app.get('/get-all', function (req, res) {
   _models2.default.Chat.findAll({ include: [_models2.default.Integration] }).then(function (chats) {
     if (chats !== null) {
-      var data = chats.map(function (_ref) {
-        var dataValues = _ref.dataValues;
-        return dataValues;
+      var data = chats.map(function (chat) {
+        return chat.get({ plain: true });
       });
       res.json(data);
     }
