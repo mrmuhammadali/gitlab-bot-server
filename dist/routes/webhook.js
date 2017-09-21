@@ -34,7 +34,7 @@ var telegramBot = new _TelegramBot.TelegramBot();
 var connector = new builder.ChatConnector(utils.SKYPE_CREDENTIALS);
 var skypeBot = new builder.UniversalBot(connector);
 
-exports.default = router.post('/webhook', function (req, res) {
+exports.default = router.post('', function (req, res) {
   console.log("++++Request Body++++", req.body);
   var event = req.headers["x-gitlab-event"];
   var str = '';

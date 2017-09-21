@@ -11,7 +11,7 @@ const telegramBot = new TelegramBot()
 const connector = new builder.ChatConnector(utils.SKYPE_CREDENTIALS);
 const skypeBot = new builder.UniversalBot(connector);
 
-export default router.post('/webhook', (req, res) => {
+export default router.post('', (req, res) => {
   console.log("++++Request Body++++", req.body)
   const event = req.headers["x-gitlab-event"]
   let str = ''
