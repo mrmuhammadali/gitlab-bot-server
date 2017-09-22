@@ -55,14 +55,14 @@ exports.default = router.post('', function (req, res) {
 
 
         projectId = project_id;
-        str = '**' + (0, _lodash.upperCase)(objectKind) + ':**\n      ---\n      *' + (0, _lodash.startCase)(name) + ' @' + username + '* **' + (0, _lodash.lowerCase)(objectKind) + 'ed** ' + (totalCommitsCount ? totalCommitsCount + ' commits' : '') + ' in ' + projectFullPath + '.\n      ---\n      ';
-        str += event === eventTypes.Push_Hook ? 'Commits: \n      ' : '';
+        str = '**' + (0, _lodash.upperCase)(objectKind) + ':**\n      \n      ---\n      \n      *' + (0, _lodash.startCase)(name) + ' @' + username + '* **' + (0, _lodash.lowerCase)(objectKind) + 'ed** ' + (totalCommitsCount ? totalCommitsCount + ' commits' : '') + ' in ' + projectFullPath + '.\n      \n      ---\n      ';
+        str += event === eventTypes.Push_Hook ? 'Commits:\n\n' : '';
         commits.map(function (commit, index) {
           var id = commit.id,
               message = commit.message,
               name = commit.author.name;
 
-          str += '  ' + (index + 1) + '. *' + (0, _lodash.startCase)(name) + '* **committed** ' + message;
+          str += '  ' + (index + 1) + '. *' + (0, _lodash.startCase)(name) + '* **committed**: ' + message;
         });
         break;
       }
@@ -89,8 +89,8 @@ exports.default = router.post('', function (req, res) {
 
 
         projectId = _project_id;
-        str = '**ISSUE #' + iid + ':**\n      ---\n      *' + (0, _lodash.startCase)(_name) + ' @' + _username + '* **' + state + ' issue** in ' + _projectFullPath + '. \n      ---\n      Title: ' + (0, _lodash.capitalize)(title) + ' \n      Due Date: ' + due_date + ' \n      [Visit Issue](' + url + ' "' + url + '")\n      ';
-        str += assignees.length > 0 ? 'Assigned To: \n      ' : '';
+        str = '**ISSUE #' + iid + ':**\n      \n      ---\n      \n      *' + (0, _lodash.startCase)(_name) + ' @' + _username + '* **' + state + ' issue** in ' + _projectFullPath + '. \n      \n      ---\n      \n      Title: ' + (0, _lodash.capitalize)(title) + ' \n\n      Due Date: ' + due_date + ' \n\n      [Visit Issue](' + url + ' "' + url + '") \n\n      ';
+        str += assignees.length > 0 ? 'Assigned To: \n\n' : '';
         assignees.map(function (_ref, index) {
           var name = _ref.name,
               username = _ref.username;
@@ -126,7 +126,7 @@ exports.default = router.post('', function (req, res) {
         projectId = _project_id2;
 
         if ((0, _lodash.size)(issue) > 0) {
-          str = '**ISSUE #' + _iid + ':**\n        ---\n        *' + (0, _lodash.startCase)(_name2) + ' @' + _username2 + '* **commented** on issue #' + _iid + ' in ' + _projectFullPath2 + '.\n        ---\n        Issue State: ' + _state + ' \n        Title: ' + (0, _lodash.capitalize)(_title) + ' \n        [Visit Issue](' + _url + ' "' + _url + '")';
+          str = '**ISSUE #' + _iid + ':**\n        \n        ---\n        \n        *' + (0, _lodash.startCase)(_name2) + ' @' + _username2 + '* **commented** on issue #' + _iid + ' in ' + _projectFullPath2 + '.\n        \n        ---\n        \n        Issue State: ' + _state + ' \n\n        Title: ' + (0, _lodash.capitalize)(_title) + ' \n\n        [Visit Issue](' + _url + ' "' + _url + '")';
         }
         break;
       }

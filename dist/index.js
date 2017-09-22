@@ -89,7 +89,11 @@ skypeBot.dialog('askSpaceDelete', [function (session, args) {
 // const reply = new builder.Message()
 //   .address(address)
 //   .text(`**PUSH:**
-//   ---`)
+//   ---
+//   *Muhammad Ali @mrmuhammadali* **pushed** 1 commits in emumba/aera/sauron.
+//   ---
+//   Commits:
+//     1. *Muhammad Ali* **committed** Separates View from Logic`)
 //
 // skypeBot.send(reply)
 

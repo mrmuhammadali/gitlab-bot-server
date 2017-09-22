@@ -32,15 +32,17 @@ export default router.post('', (req, res) => {
 
       projectId = project_id
       str = `**${upperCase(objectKind)}:**
+      
       ---
+      
       *${startCase(name)} @${username}* **${lowerCase(objectKind)}ed** ${totalCommitsCount ? `${totalCommitsCount} commits` : ''} in ${projectFullPath}.
+      
       ---
       `
-      str += event === eventTypes.Push_Hook ? `Commits: 
-      ` : ''
+      str += event === eventTypes.Push_Hook ? `Commits:\n\n` : ''
       commits.map((commit, index) => {
         const { id, message, author: { name } } = commit
-        str += `  ${index + 1}. *${startCase(name)}* **committed** ${message}`
+        str += `  ${index + 1}. *${startCase(name)}* **committed**: ${message}`
       })
       break
     }
@@ -55,15 +57,18 @@ export default router.post('', (req, res) => {
 
       projectId = project_id
       str = `**ISSUE #${iid}:**
+      
       ---
+      
       *${startCase(name)} @${username}* **${state} issue** in ${projectFullPath}. 
+      
       ---
-      Title: ${capitalize(title)} 
-      Due Date: ${due_date} 
-      [Visit Issue](${url} "${url}")
+      
+      Title: ${capitalize(title)} \n
+      Due Date: ${due_date} \n
+      [Visit Issue](${url} "${url}") \n
       `
-      str += assignees.length > 0 ? `Assigned To: 
-      ` : ''
+      str += assignees.length > 0 ? `Assigned To: \n\n` : ''
       assignees.map(({ name, username }, index) => str += `  ${index + 1}. ${startCase(name)} @${username}`)
       break
     }
@@ -82,11 +87,15 @@ export default router.post('', (req, res) => {
 
       if (size(issue) > 0) {
         str = `**ISSUE #${iid}:**
+        
         ---
+        
         *${startCase(name)} @${username}* **commented** on issue #${iid} in ${projectFullPath}.
+        
         ---
-        Issue State: ${state} 
-        Title: ${capitalize(title)} 
+        
+        Issue State: ${state} \n
+        Title: ${capitalize(title)} \n
         [Visit Issue](${url} "${url}")`
       }
       break

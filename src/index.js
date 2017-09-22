@@ -4,7 +4,7 @@ const builder = require('botbuilder')
 
 import * as routes from './routes'
 import models from './models'
-import { AUTH_CALLBACK_ENDPOINT, MESSAGE, SKYPE_BOT_URL, SKYPE_CREDENTIALS } from './utils'
+import { AUTH_CALLBACK_ENDPOINT, MESSAGE, SKYPE_BOT_URL, SKYPE_ADDRESS, SKYPE_CREDENTIALS } from './utils'
 import { TelegramBot } from './TelegramBot'
 import { BotOperations } from './botOperations'
 
@@ -68,7 +68,11 @@ skypeBot.dialog('askSpaceDelete', [
 // const reply = new builder.Message()
 //   .address(address)
 //   .text(`**PUSH:**
-//   ---`)
+//   ---
+//   *Muhammad Ali @mrmuhammadali* **pushed** 1 commits in emumba/aera/sauron.
+//   ---
+//   Commits:
+//     1. *Muhammad Ali* **committed** Separates View from Logic`)
 //
 // skypeBot.send(reply)
 
