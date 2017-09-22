@@ -55,7 +55,7 @@ exports.default = router.post('', function (req, res) {
 
 
         projectId = project_id;
-        str = '**' + (0, _lodash.upperCase)(objectKind) + ':**\n      \n---\n\n      *' + (0, _lodash.startCase)(name) + ' @' + username + '*\n      **' + (0, _lodash.lowerCase)(objectKind) + 'ed**\n      ' + (totalCommitsCount ? totalCommitsCount + ' commits' : '') + ' in ' + projectFullPath + '.\n      \n---\n\n';
+        str = '**' + (0, _lodash.upperCase)(objectKind) + ':**\n      \n---\n\n*' + (0, _lodash.startCase)(name) + ' @' + username + '* **' + (0, _lodash.lowerCase)(objectKind) + 'ed** ' + (totalCommitsCount ? totalCommitsCount + ' commits' : '') + ' in ' + projectFullPath + '.\n      \n---\n\n';
         str += event === eventTypes.Push_Hook ? 'Commits:\n\n' : '';
         commits.map(function (commit, index) {
           var id = commit.id,

@@ -32,10 +32,7 @@ export default router.post('', (req, res) => {
 
       projectId = project_id
       str = `**${upperCase(objectKind)}:**
-      \n---\n
-      *${startCase(name)} @${username}*
-      **${lowerCase(objectKind)}ed**
-      ${totalCommitsCount ? `${totalCommitsCount} commits` : ''} in ${projectFullPath}.
+      \n---\n\n*${startCase(name)} @${username}* **${lowerCase(objectKind)}ed** ${totalCommitsCount ? `${totalCommitsCount} commits` : ''} in ${projectFullPath}.
       \n---\n\n`
       str += event === eventTypes.Push_Hook ? `Commits:\n\n` : ''
       commits.map((commit, index) => {
