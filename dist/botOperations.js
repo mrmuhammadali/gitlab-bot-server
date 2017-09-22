@@ -261,7 +261,15 @@ var BotOperations = exports.BotOperations = function BotOperations() {
           access_token = _chat$get.access_token,
           refresh_token = _chat$get.refresh_token;
 
-      _this.fetchProjects(isSkype, chatId, session, access_token);
+      if (access_token) {
+        _this.fetchProjects(isSkype, chatId, session, access_token);
+      } else {
+        if (isSkype) {
+          session.send(utils.MESSAGE.INVALID_TOKEN);
+        } else {
+          telegramBot.sendMessage(chatId, utils.MESSAGE.INVALID_TOKEN);
+        }
+      }
     });
   };
 

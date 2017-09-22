@@ -228,10 +228,19 @@ export class BotOperations {
   }
 
   handleNewIntegration = (isSkype, chatId, session) => {
-    models.Chat.findOne({where: {chatId}})
+    models.Chat.findOne({ where: {chatId} })
       .then( chat => {
         const { access_token, refresh_token } = chat.get({plain: true})
-        this.fetchProjects(isSkype, chatId, session, access_token)
+
+        if (access_token) {
+          this.fetchProjects(isSkype, chatId, session, access_token)
+        } else {
+          if (isSkype) {
+            session.send(utils.MESSAGE.INVALID_TOKEN)
+          } else {
+            telegramBot.sendMessage(chatId, utils.MESSAGE.INVALID_TOKEN);
+          }
+        }
       })
   }
 
