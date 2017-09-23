@@ -32,8 +32,8 @@ export default router.post('', (req, res) => {
 
       projectId = project_id
       str = `**${upperCase(objectKind)}:**
-      \n---\n\n*${startCase(name)} @${username}* **${lowerCase(objectKind)}ed** ${totalCommitsCount ? `${totalCommitsCount} commits` : ''} in ${projectFullPath}.
-      \n---\n\n`
+      \n---\n\n*${startCase(name)} [@${username}](https://gitlab.com/${username})* **${lowerCase(objectKind)}ed** ${totalCommitsCount ? `${totalCommitsCount} commits` : ''} in ${projectFullPath}.
+      \n---\n`
       str += event === eventTypes.Push_Hook ? `Commits:\n\n` : ''
       commits.map((commit, index) => {
         const { id, message, author: { name } } = commit
@@ -52,10 +52,7 @@ export default router.post('', (req, res) => {
 
       projectId = project_id
       str = `**ISSUE #${iid}:**
-      \n---\n
-      *${startCase(name)} @${username}*
-      **${state} issue**
-      in ${projectFullPath}. 
+      \n---\n\n*${startCase(name)} @${username}* **${state} issue** in ${projectFullPath}. 
       \n---\n
       Title: ${capitalize(title)} 
       Due Date: ${due_date} 
@@ -79,10 +76,7 @@ export default router.post('', (req, res) => {
 
       if (size(issue) > 0) {
         str = `**ISSUE #${iid}:**
-        \n---\n
-        *${startCase(name)} @${username}*
-        **commented**
-        on issue #${iid} in ${projectFullPath}.
+        \n---\n\n*${startCase(name)} @${username}* **commented** on issue #${iid} in ${projectFullPath}.
         \n---\n
         Issue State: ${state} \n
         Title: ${capitalize(title)} \n
