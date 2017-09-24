@@ -149,42 +149,53 @@ export class BotOperations {
 
   fetchProjects = (isSkype, chatId, session, access_token) => {
     const opts = {
-      method: 'GET',
-      uri: `${utils.GITLAB_URL}/groups`,
       auth: { bearer: access_token }
     }
-    request(opts, (error, response, groups) => {
-      groups = JSON.parse(groups)
-      if (groups.error) {
-        if (isSkype) {
-          session.send(utils.MESSAGE.INVALID_TOKEN)
-        } else {
-          telegramBot.sendMessage(chatId, utils.MESSAGE.INVALID_TOKEN);
-        }
-      } else {
-        const requests = groups.map(group =>
-          request.get(`${utils.GITLAB_URL}/groups/${group.id}/projects`, {auth: {bearer: access_token}})
-        )
+    // TODO handle own projects
+    request.get(`${utils.GITLAB_URL}/groups`, opts)
+      .then(groups => {
+        if (groups) {
+          groups = JSON.parse(groups)
+          let errorCounter = 0
 
-        Promise.all(requests)
-          .then(responses => {
+          Promise.all(
+            groups.map((group, index) =>
+              request.get(`${utils.GITLAB_URL}/groups/${group.id}/projects`, opts)
+                .catch(err => {
+                  errorCounter++
+
+                  if (errorCounter === groups.length) {
+                    const errMessage = JSON.parse(err.message.substr(err.message.indexOf(`"`)))
+
+                    if (isSkype) {
+                      session.send(errMessage.message)
+                    } else {
+                      telegramBot.sendMessage(chatId, errMessage.message);
+                    }
+                  }
+                })
+            )
+          ).then(responses => {
             const telegramProjects = []
             const skypeProjects = {}
             responses.map(response => {
-              const projects = JSON.parse(response)
-              projects.map(project => {
-                console.log("+++project fetched: ", project.name)
-                const {
-                  id: projectId,
-                  name: projectName,
-                  name_with_namespace: projectFullName,
-                  namespace: { id: groupId, name: groupName }
-                } = project
-                const callback_data = JSON.stringify([projectId, projectFullName]);
-                telegramProjects.push([{text: projectFullName, callback_data}])
-                skypeProjects[projectFullName] = { projectId, projectFullName }
-              })
+              if(response) {
+                const projects = JSON.parse(response)
+                projects.map(project => {
+                  console.log("+++project fetched: ", project.name)
+                  const {
+                    id: projectId,
+                    name: projectName,
+                    name_with_namespace: projectFullName,
+                    namespace: {id: groupId, name: groupName}
+                  } = project
+                  const callback_data = JSON.stringify([projectId, projectFullName]);
+                  telegramProjects.push([{text: projectFullName, callback_data}])
+                  skypeProjects[projectFullName] = {projectId, projectFullName}
+                })
+              }
             })
+
             if (isSkype) {
               session.beginDialog('askSpaceIntegrate', {projects: skypeProjects});
             } else {
@@ -197,15 +208,15 @@ export class BotOperations {
               telegramBot.sendMessage(chatId, utils.MESSAGE.CHOOSE_SAPCE_INTEGRATE, opts);
             }
           })
-          .catch(errors => {
-            if (isSkype) {
-              session.send(utils.MESSAGE.INVALID_TOKEN)
-            } else {
-              telegramBot.sendMessage(chatId, utils.MESSAGE.INVALID_TOKEN);
-            }
-          })
-      }
-    });
+        }
+      })
+      .catch(() => {
+        if (isSkype) {
+          session.send(utils.MESSAGE.INVALID_TOKEN)
+        } else {
+          telegramBot.sendMessage(chatId, utils.MESSAGE.INVALID_TOKEN);
+        }
+      })
   }
 
   // TODO refresh token
