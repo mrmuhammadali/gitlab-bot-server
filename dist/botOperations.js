@@ -7,6 +7,8 @@ exports.BotOperations = undefined;
 
 var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
+var _slicedToArray = function () { function sliceIterator(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"]) _i["return"](); } finally { if (_d) throw _e; } } return _arr; } return function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { return sliceIterator(arr, i); } else { throw new TypeError("Invalid attempt to destructure non-iterable instance"); } }; }();
+
 var _utils = require('./utils');
 
 var utils = _interopRequireWildcard(_utils);
@@ -175,27 +177,58 @@ var BotOperations = exports.BotOperations = function BotOperations() {
 
   this.fetchProjects = function (isSkype, chatId, session, access_token) {
     var opts = {
-      method: 'GET',
-      uri: utils.GITLAB_URL + '/groups',
       auth: { bearer: access_token }
     };
-    request(opts, function (error, response, groups) {
-      groups = JSON.parse(groups);
-      if (groups.error) {
-        if (isSkype) {
-          session.send(utils.MESSAGE.INVALID_TOKEN);
-        } else {
-          telegramBot.sendMessage(chatId, utils.MESSAGE.INVALID_TOKEN);
-        }
-      } else {
-        var requests = groups.map(function (group) {
-          return request.get(utils.GITLAB_URL + '/groups/' + group.id + '/projects', { auth: { bearer: access_token } });
-        });
+    var urls = [utils.GITLAB_URL + '/user', utils.GITLAB_URL + '/groups'];
 
-        Promise.all(requests).then(function (responses) {
-          var telegramProjects = [];
-          var skypeProjects = {};
-          responses.map(function (response) {
+    Promise.all(urls.map(function (url) {
+      return request.get(url, opts).catch(function (err) {
+        // if (isSkype) {
+        //   session.send(utils.MESSAGE.INVALID_TOKEN)
+        // } else {
+        //   telegramBot.sendMessage(chatId, utils.MESSAGE.INVALID_TOKEN);
+        // }
+      });
+    })).then(function (_ref) {
+      var _ref2 = _slicedToArray(_ref, 2),
+          user = _ref2[0],
+          groups = _ref2[1];
+
+      var errorCounter = 0;
+      var projectUrls = [];
+
+      if (user) {
+        user = JSON.parse(user);
+        projectUrls.push(utils.GITLAB_URL + '/users/' + user.id + '/projects');
+      }
+      if (groups) {
+        groups = JSON.parse(groups);
+        groups.forEach(function (_ref3) {
+          var id = _ref3.id;
+          return projectUrls.push(utils.GITLAB_URL + '/groups/' + id + '/projects');
+        });
+      }
+      console.log(projectUrls);
+
+      Promise.all(projectUrls.map(function (url) {
+        return request.get(url, opts).catch(function (err) {
+          errorCounter++;
+
+          if (errorCounter === urls.length) {
+            var errMessage = JSON.parse(err.message.substr(err.message.indexOf('"')));
+
+            if (isSkype) {
+              session.send(errMessage.message);
+            } else {
+              telegramBot.sendMessage(chatId, errMessage.message);
+            }
+          }
+        });
+      })).then(function (responses) {
+        var telegramProjects = [];
+        var skypeProjects = {};
+        responses.map(function (response) {
+          if (response) {
             var projects = JSON.parse(response);
             projects.map(function (project) {
               console.log("+++project fetched: ", project.name);
@@ -210,26 +243,21 @@ var BotOperations = exports.BotOperations = function BotOperations() {
               telegramProjects.push([{ text: projectFullName, callback_data: callback_data }]);
               skypeProjects[projectFullName] = { projectId: projectId, projectFullName: projectFullName };
             });
-          });
-          if (isSkype) {
-            session.beginDialog('askSpaceIntegrate', { projects: skypeProjects });
-          } else {
-            var _opts = {
-              reply_to_message_id: session.message_id,
-              reply_markup: {
-                inline_keyboard: telegramProjects
-              }
-            };
-            telegramBot.sendMessage(chatId, utils.MESSAGE.CHOOSE_SAPCE_INTEGRATE, _opts);
-          }
-        }).catch(function (errors) {
-          if (isSkype) {
-            session.send(utils.MESSAGE.INVALID_TOKEN);
-          } else {
-            telegramBot.sendMessage(chatId, utils.MESSAGE.INVALID_TOKEN);
           }
         });
-      }
+
+        if (isSkype) {
+          session.beginDialog('askSpaceIntegrate', { projects: skypeProjects });
+        } else {
+          var _opts = {
+            reply_to_message_id: session.message_id,
+            reply_markup: {
+              inline_keyboard: telegramProjects
+            }
+          };
+          telegramBot.sendMessage(chatId, utils.MESSAGE.CHOOSE_SAPCE_INTEGRATE, _opts);
+        }
+      });
     });
   };
 

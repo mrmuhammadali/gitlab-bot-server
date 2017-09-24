@@ -7,7 +7,7 @@ var GITLAB_URL = exports.GITLAB_URL = 'https://gitlab.com/api/v4';
 var BASE_URL = exports.BASE_URL = 'https://gitlab-bot-server.herokuapp.com';
 var AUTH_CALLBACK_ENDPOINT = exports.AUTH_CALLBACK_ENDPOINT = '/auth-callback';
 var TELEGRAM_TOKEN = exports.TELEGRAM_TOKEN = '390407644:AAF5qrrLrku8zMel5lHUKF1czBv5kyQrhJY';
-// export const TELEGRAM_TOKEN = '407191495:AAFvFL2_KtFmo7QlcPzV7bJR-14YYBxTbXo'
+// export const TELEGRAM_TOKEN = '437741439:AAG0P8KDrMuH-oCm38JwJE1-ORz5aJcIvMI'
 var TELEGRAM_BOT_URL = exports.TELEGRAM_BOT_URL = 'https://t.me/MrGitLabBot/';
 var SKYPE_BOT_URL = exports.SKYPE_BOT_URL = 'https://join.skype.com/bot/8864cf5d-3c38-457f-976f-cfb07dd93c7f';
 

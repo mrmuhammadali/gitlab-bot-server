@@ -151,72 +151,84 @@ export class BotOperations {
     const opts = {
       auth: { bearer: access_token }
     }
-    // TODO handle own projects
-    request.get(`${utils.GITLAB_URL}/groups`, opts)
-      .then(groups => {
-        if (groups) {
-          groups = JSON.parse(groups)
-          let errorCounter = 0
+    const urls = [`${utils.GITLAB_URL}/user`, `${utils.GITLAB_URL}/groups`]
 
-          Promise.all(
-            groups.map((group, index) =>
-              request.get(`${utils.GITLAB_URL}/groups/${group.id}/projects`, opts)
-                .catch(err => {
-                  errorCounter++
+    Promise.all(
+      urls.map(url =>
+        request.get(url, opts)
+          .catch(err => {
+            // if (isSkype) {
+            //   session.send(utils.MESSAGE.INVALID_TOKEN)
+            // } else {
+            //   telegramBot.sendMessage(chatId, utils.MESSAGE.INVALID_TOKEN);
+            // }
+          })
+      )
+    ).then(([user, groups]) => {
+      let errorCounter = 0
+      const projectUrls = []
 
-                  if (errorCounter === groups.length) {
-                    const errMessage = JSON.parse(err.message.substr(err.message.indexOf(`"`)))
+      if (user) {
+        user = JSON.parse(user)
+        projectUrls.push(`${utils.GITLAB_URL}/users/${user.id}/projects`)
+      }
+      if (groups) {
+        groups = JSON.parse(groups)
+        groups.forEach(({id}) => projectUrls.push(`${utils.GITLAB_URL}/groups/${id}/projects`))
+      }
+      console.log(projectUrls)
 
-                    if (isSkype) {
-                      session.send(errMessage.message)
-                    } else {
-                      telegramBot.sendMessage(chatId, errMessage.message);
-                    }
-                  }
-                })
-            )
-          ).then(responses => {
-            const telegramProjects = []
-            const skypeProjects = {}
-            responses.map(response => {
-              if(response) {
-                const projects = JSON.parse(response)
-                projects.map(project => {
-                  console.log("+++project fetched: ", project.name)
-                  const {
-                    id: projectId,
-                    name: projectName,
-                    name_with_namespace: projectFullName,
-                    namespace: {id: groupId, name: groupName}
-                  } = project
-                  const callback_data = JSON.stringify([projectId, projectFullName]);
-                  telegramProjects.push([{text: projectFullName, callback_data}])
-                  skypeProjects[projectFullName] = {projectId, projectFullName}
-                })
+      Promise.all(
+        projectUrls.map(url =>
+          request.get(url, opts)
+            .catch(err => {
+              errorCounter++
+
+              if (errorCounter === urls.length) {
+                const errMessage = JSON.parse(err.message.substr(err.message.indexOf(`"`)))
+
+                if (isSkype) {
+                  session.send(errMessage.message)
+                } else {
+                  telegramBot.sendMessage(chatId, errMessage.message);
+                }
               }
             })
+        )
+      ).then(responses => {
+        const telegramProjects = []
+        const skypeProjects = {}
+        responses.map(response => {
+          if(response) {
+            const projects = JSON.parse(response)
+            projects.map(project => {
+              console.log("+++project fetched: ", project.name)
+              const {
+                id: projectId,
+                name: projectName,
+                name_with_namespace: projectFullName,
+                namespace: {id: groupId, name: groupName}
+              } = project
+              const callback_data = JSON.stringify([projectId, projectFullName]);
+              telegramProjects.push([{text: projectFullName, callback_data}])
+              skypeProjects[projectFullName] = {projectId, projectFullName}
+            })
+          }
+        })
 
-            if (isSkype) {
-              session.beginDialog('askSpaceIntegrate', {projects: skypeProjects});
-            } else {
-              const opts = {
-                reply_to_message_id: session.message_id,
-                reply_markup: {
-                  inline_keyboard: telegramProjects
-                }
-              };
-              telegramBot.sendMessage(chatId, utils.MESSAGE.CHOOSE_SAPCE_INTEGRATE, opts);
-            }
-          })
-        }
-      })
-      .catch(() => {
         if (isSkype) {
-          session.send(utils.MESSAGE.INVALID_TOKEN)
+          session.beginDialog('askSpaceIntegrate', {projects: skypeProjects});
         } else {
-          telegramBot.sendMessage(chatId, utils.MESSAGE.INVALID_TOKEN);
+          const opts = {
+            reply_to_message_id: session.message_id,
+            reply_markup: {
+              inline_keyboard: telegramProjects
+            }
+          };
+          telegramBot.sendMessage(chatId, utils.MESSAGE.CHOOSE_SAPCE_INTEGRATE, opts);
         }
       })
+    })
   }
 
   // TODO refresh token
