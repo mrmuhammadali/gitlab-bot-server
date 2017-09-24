@@ -183,11 +183,11 @@ var BotOperations = exports.BotOperations = function BotOperations() {
 
     Promise.all(urls.map(function (url) {
       return request.get(url, opts).catch(function (err) {
-        // if (isSkype) {
-        //   session.send(utils.MESSAGE.INVALID_TOKEN)
-        // } else {
-        //   telegramBot.sendMessage(chatId, utils.MESSAGE.INVALID_TOKEN);
-        // }
+        if (isSkype) {
+          session.send(utils.MESSAGE.INVALID_TOKEN);
+        } else {
+          telegramBot.sendMessage(chatId, utils.MESSAGE.INVALID_TOKEN);
+        }
       });
     })).then(function (_ref) {
       var _ref2 = _slicedToArray(_ref, 2),

@@ -157,11 +157,11 @@ export class BotOperations {
       urls.map(url =>
         request.get(url, opts)
           .catch(err => {
-            // if (isSkype) {
-            //   session.send(utils.MESSAGE.INVALID_TOKEN)
-            // } else {
-            //   telegramBot.sendMessage(chatId, utils.MESSAGE.INVALID_TOKEN);
-            // }
+            if (isSkype) {
+              session.send(utils.MESSAGE.INVALID_TOKEN)
+            } else {
+              telegramBot.sendMessage(chatId, utils.MESSAGE.INVALID_TOKEN);
+            }
           })
       )
     ).then(([user, groups]) => {
