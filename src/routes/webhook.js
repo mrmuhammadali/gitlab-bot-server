@@ -33,7 +33,7 @@ export default router.post('', (req, res) => {
       projectId = project_id
       str = `**${upperCase(objectKind)}:**
       \n---\n\n*${startCase(name)} [@${username}](https://gitlab.com/${username})* **${lowerCase(objectKind)}ed** ${totalCommitsCount ? `${totalCommitsCount} commits` : ''} in [${projectFullPath}](${webUrl}).
-      \n---\n`
+      ---\n`
       str += event === eventTypes.Push_Hook ? `Commits:\n\n` : ''
       commits.map((commit, index) => {
         const { id, message, author: { name }, url } = commit
