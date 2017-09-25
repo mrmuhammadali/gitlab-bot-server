@@ -25,19 +25,19 @@ export default router.post('', (req, res) => {
         user_name: name,
         user_username: username,
         project_id,
-        project: { path_with_namespace: projectFullPath },
+        project: { path_with_namespace: projectFullPath, web_url: webUrl },
         commits,
         total_commits_count: totalCommitsCount
       } = req.body
 
       projectId = project_id
       str = `**${upperCase(objectKind)}:**
-      \n---\n\n*${startCase(name)} [@${username}](https://gitlab.com/${username})* **${lowerCase(objectKind)}ed** ${totalCommitsCount ? `${totalCommitsCount} commits` : ''} in ${projectFullPath}.
+      \n---\n\n*${startCase(name)} [@${username}](https://gitlab.com/${username})* **${lowerCase(objectKind)}ed** ${totalCommitsCount ? `${totalCommitsCount} commits` : ''} in [${projectFullPath}](${webUrl}).
       \n---\n`
       str += event === eventTypes.Push_Hook ? `Commits:\n\n` : ''
       commits.map((commit, index) => {
-        const { id, message, author: { name } } = commit
-        str += `  ${index + 1}. *${startCase(name)}* **committed**: ${message}`
+        const { id, message, author: { name }, url } = commit
+        str += `  ${index + 1}. *${startCase(name)}* **committed**: ${message}\n[Visit Commit](${url})\n`
       })
       break
     }

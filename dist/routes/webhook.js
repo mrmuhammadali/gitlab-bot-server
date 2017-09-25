@@ -49,20 +49,23 @@ exports.default = router.post('', function (req, res) {
             name = _req$body.user_name,
             username = _req$body.user_username,
             project_id = _req$body.project_id,
-            projectFullPath = _req$body.project.path_with_namespace,
+            _req$body$project = _req$body.project,
+            projectFullPath = _req$body$project.path_with_namespace,
+            webUrl = _req$body$project.web_url,
             commits = _req$body.commits,
             totalCommitsCount = _req$body.total_commits_count;
 
 
         projectId = project_id;
-        str = '**' + (0, _lodash.upperCase)(objectKind) + ':**\n      \n---\n\n*' + (0, _lodash.startCase)(name) + ' [@' + username + '](https://gitlab.com/' + username + ')* **' + (0, _lodash.lowerCase)(objectKind) + 'ed** ' + (totalCommitsCount ? totalCommitsCount + ' commits' : '') + ' in ' + projectFullPath + '.\n      \n---\n';
+        str = '**' + (0, _lodash.upperCase)(objectKind) + ':**\n      \n---\n\n*' + (0, _lodash.startCase)(name) + ' [@' + username + '](https://gitlab.com/' + username + ')* **' + (0, _lodash.lowerCase)(objectKind) + 'ed** ' + (totalCommitsCount ? totalCommitsCount + ' commits' : '') + ' in [' + projectFullPath + '](' + webUrl + ').\n      \n---\n';
         str += event === eventTypes.Push_Hook ? 'Commits:\n\n' : '';
         commits.map(function (commit, index) {
           var id = commit.id,
               message = commit.message,
-              name = commit.author.name;
+              name = commit.author.name,
+              url = commit.url;
 
-          str += '  ' + (index + 1) + '. *' + (0, _lodash.startCase)(name) + '* **committed**: ' + message;
+          str += '  ' + (index + 1) + '. *' + (0, _lodash.startCase)(name) + '* **committed**: ' + message + '\n[Visit Commit](' + url + ')\n';
         });
         break;
       }
