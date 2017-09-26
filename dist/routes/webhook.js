@@ -49,6 +49,8 @@ exports.default = router.post('', function (req, res) {
             name = _req$body.user_name,
             username = _req$body.user_username,
             project_id = _req$body.project_id,
+            _req$body$ref = _req$body.ref,
+            ref = _req$body$ref === undefined ? '' : _req$body$ref,
             _req$body$project = _req$body.project,
             projectFullPath = _req$body$project.path_with_namespace,
             webUrl = _req$body$project.web_url,
@@ -56,8 +58,9 @@ exports.default = router.post('', function (req, res) {
             totalCommitsCount = _req$body.total_commits_count;
 
 
+        var branch = ref && ref.substr(ref.lastIndexOf('/'));
         projectId = project_id;
-        str = '**' + (0, _lodash.upperCase)(objectKind) + ':**\n      \n---\n\n*' + (0, _lodash.startCase)(name) + ' [@' + username + '](https://gitlab.com/' + username + ')* **' + (0, _lodash.lowerCase)(objectKind) + 'ed** ' + (totalCommitsCount ? totalCommitsCount + ' commits' : '') + ' in [' + projectFullPath + '](' + webUrl + ').\n      \n---\n';
+        str = '**' + (0, _lodash.upperCase)(objectKind) + ':**\n      \n---\n\n*' + (0, _lodash.startCase)(name) + ' [@' + username + '](https://gitlab.com/' + username + ')* **' + (0, _lodash.lowerCase)(objectKind) + 'ed** ' + (totalCommitsCount ? totalCommitsCount + ' commits' : '') + ' in' + (branch ? ' branch \'' + branch + '\' of' : '') + ' [' + projectFullPath + '](' + webUrl + ').\n      \n---\n';
         str += event === eventTypes.Push_Hook ? 'Commits:\n\n' : '';
         commits.map(function (commit, index) {
           var id = commit.id,
@@ -92,7 +95,7 @@ exports.default = router.post('', function (req, res) {
 
 
         projectId = _project_id;
-        str = '**ISSUE #' + iid + ':**\n      \n---\n\n*' + (0, _lodash.startCase)(_name) + ' @' + _username + '* **' + state + ' issue** in ' + _projectFullPath + '. \n      \n---\n\n      Title: ' + (0, _lodash.capitalize)(title) + ' \n      Due Date: ' + due_date + ' \n      [Visit Issue](' + url + ') \n\n';
+        str = '**ISSUE #' + iid + ':**\n      \n---\n\n*' + (0, _lodash.startCase)(_name) + ' @' + _username + '* **' + state + ' issue** in ' + _projectFullPath + '. \n      \n---\n\n      Title: ' + (0, _lodash.capitalize)(title) + ' \n      Due Date: ' + due_date + ' \n\n[Visit Issue](' + url + ') \n\n';
         str += assignees.length > 0 ? 'Assigned To: \n\n' : '';
         assignees.map(function (_ref, index) {
           var name = _ref.name,
@@ -129,7 +132,7 @@ exports.default = router.post('', function (req, res) {
         projectId = _project_id2;
 
         if ((0, _lodash.size)(issue) > 0) {
-          str = '**ISSUE #' + _iid + ':**\n        \n---\n\n*' + (0, _lodash.startCase)(_name2) + ' @' + _username2 + '* **commented** on issue #' + _iid + ' in ' + _projectFullPath2 + '.\n        \n---\n\n        Issue State: ' + _state + ' \n\n        Title: ' + (0, _lodash.capitalize)(_title) + ' \n\n        [Visit Issue](' + _url + ')';
+          str = '**ISSUE #' + _iid + ':**\n        \n---\n\n*' + (0, _lodash.startCase)(_name2) + ' @' + _username2 + '* **commented** on issue #' + _iid + ' in ' + _projectFullPath2 + '.\n        \n---\n\n        Issue State: ' + _state + ' \n\n        Title: ' + (0, _lodash.capitalize)(_title) + ' \n\n[Visit Issue](' + _url + ')';
         }
         break;
       }

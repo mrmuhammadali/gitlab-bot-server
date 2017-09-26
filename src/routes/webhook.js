@@ -25,14 +25,16 @@ export default router.post('', (req, res) => {
         user_name: name,
         user_username: username,
         project_id,
+        ref = '',
         project: { path_with_namespace: projectFullPath, web_url: webUrl },
         commits,
         total_commits_count: totalCommitsCount
       } = req.body
 
+      const branch = ref && ref.substr(ref.lastIndexOf('/'))
       projectId = project_id
       str = `**${upperCase(objectKind)}:**
-      \n---\n\n*${startCase(name)} [@${username}](https://gitlab.com/${username})* **${lowerCase(objectKind)}ed** ${totalCommitsCount ? `${totalCommitsCount} commits` : ''} in [${projectFullPath}](${webUrl}).
+      \n---\n\n*${startCase(name)} [@${username}](https://gitlab.com/${username})* **${lowerCase(objectKind)}ed** ${totalCommitsCount ? `${totalCommitsCount} commits` : ''} in${branch ? ` branch '${branch}' of` : ''} [${projectFullPath}](${webUrl}).
       \n---\n`
       str += event === eventTypes.Push_Hook ? `Commits:\n\n` : ''
       commits.map((commit, index) => {
@@ -55,8 +57,7 @@ export default router.post('', (req, res) => {
       \n---\n\n*${startCase(name)} @${username}* **${state} issue** in ${projectFullPath}. 
       \n---\n
       Title: ${capitalize(title)} 
-      Due Date: ${due_date} 
-      [Visit Issue](${url}) \n\n`
+      Due Date: ${due_date} \n\n[Visit Issue](${url}) \n\n`
       str += assignees.length > 0 ? `Assigned To: \n\n` : ''
       assignees.map(({ name, username }, index) => str += `  ${index + 1}. *${startCase(name)} @${username}*`)
       break
@@ -79,8 +80,7 @@ export default router.post('', (req, res) => {
         \n---\n\n*${startCase(name)} @${username}* **commented** on issue #${iid} in ${projectFullPath}.
         \n---\n
         Issue State: ${state} \n
-        Title: ${capitalize(title)} \n
-        [Visit Issue](${url})`
+        Title: ${capitalize(title)} \n\n[Visit Issue](${url})`
       }
       break
     }
