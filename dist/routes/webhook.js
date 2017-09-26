@@ -58,7 +58,7 @@ exports.default = router.post('', function (req, res) {
             totalCommitsCount = _req$body.total_commits_count;
 
 
-        var branch = ref && ref.substr(ref.lastIndexOf('/'));
+        var branch = ref && ref.substr(ref.lastIndexOf('/') + 1);
         projectId = project_id;
         str = '**' + (0, _lodash.upperCase)(objectKind) + ':**\n      \n---\n\n*' + (0, _lodash.startCase)(name) + ' [@' + username + '](https://gitlab.com/' + username + ')* **' + (0, _lodash.lowerCase)(objectKind) + 'ed** ' + (totalCommitsCount ? totalCommitsCount + ' commits' : '') + ' in' + (branch ? ' branch \'' + branch + '\' of' : '') + ' [' + projectFullPath + '](' + webUrl + ').\n      \n---\n';
         str += event === eventTypes.Push_Hook ? 'Commits:\n\n' : '';

@@ -31,7 +31,7 @@ export default router.post('', (req, res) => {
         total_commits_count: totalCommitsCount
       } = req.body
 
-      const branch = ref && ref.substr(ref.lastIndexOf('/'))
+      const branch = ref && ref.substr(ref.lastIndexOf('/') + 1)
       projectId = project_id
       str = `**${upperCase(objectKind)}:**
       \n---\n\n*${startCase(name)} [@${username}](https://gitlab.com/${username})* **${lowerCase(objectKind)}ed** ${totalCommitsCount ? `${totalCommitsCount} commits` : ''} in${branch ? ` branch '${branch}' of` : ''} [${projectFullPath}](${webUrl}).
