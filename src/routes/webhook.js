@@ -47,17 +47,17 @@ export default router.post('', (req, res) => {
     case eventTypes.Issue_Hook: {
       const {
         user: { name, username },
-        project: { path_with_namespace: projectFullPath },
+        project: { path_with_namespace: projectFullPath, web_url: webUrl },
         object_attributes: { iid, title,  project_id, description, state, action, weight, due_date, url },
         assignees = []
       } = req.body
 
       projectId = project_id
-      str = `**ISSUE #${iid}:**
-      \n---\n\n*${startCase(name)} @${username}* **${state} issue** in ${projectFullPath}. 
+      str = `**[ISSUE #${iid}](${url}):**
+      \n---\n\n*${startCase(name)} [@${username}](https://gitlab.com/${username})* **${state} issue** in [${projectFullPath}](${webUrl}). 
       \n---\n
-      Title: ${capitalize(title)} 
-      Due Date: ${due_date} \n\n[Visit Issue](${url}) \n\n`
+      Title: ${capitalize(title)}
+      Due Date: ${due_date} \n\n`
       str += assignees.length > 0 ? `Assigned To: \n\n` : ''
       assignees.map(({ name, username }, index) => str += `  ${index + 1}. *${startCase(name)} @${username}*`)
       break
@@ -67,7 +67,7 @@ export default router.post('', (req, res) => {
       const {
         user: { name, username },
         project_id,
-        project: { path_with_namespace: projectFullPath },
+        project: { path_with_namespace: projectFullPath, web_url: webUrl },
         object_attributes: { note, noteable_type: notableType, url },
         issue = {}
       } = req.body
@@ -76,11 +76,12 @@ export default router.post('', (req, res) => {
       projectId = project_id
 
       if (size(issue) > 0) {
-        str = `**ISSUE #${iid}:**
-        \n---\n\n*${startCase(name)} @${username}* **commented** on issue #${iid} in ${projectFullPath}.
+        str = `**[ISSUE #${iid}](${url}):**
+        \n---\n\n*${startCase(name)} [@${username}](https://gitlab.com/${username})* **commented** on issue #${iid} in [${projectFullPath}](${webUrl}).
         \n---\n
         Issue State: ${state} \n
-        Title: ${capitalize(title)} \n\n[Visit Issue](${url})`
+        Title: ${capitalize(title)} \n
+        Note: ${capitalize(note)}`
       }
       break
     }

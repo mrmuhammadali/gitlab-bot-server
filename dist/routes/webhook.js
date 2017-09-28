@@ -79,7 +79,9 @@ exports.default = router.post('', function (req, res) {
             _req$body2$user = _req$body2.user,
             _name = _req$body2$user.name,
             _username = _req$body2$user.username,
-            _projectFullPath = _req$body2.project.path_with_namespace,
+            _req$body2$project = _req$body2.project,
+            _projectFullPath = _req$body2$project.path_with_namespace,
+            _webUrl = _req$body2$project.web_url,
             _req$body2$object_att = _req$body2.object_attributes,
             iid = _req$body2$object_att.iid,
             title = _req$body2$object_att.title,
@@ -95,7 +97,7 @@ exports.default = router.post('', function (req, res) {
 
 
         projectId = _project_id;
-        str = '**ISSUE #' + iid + ':**\n      \n---\n\n*' + (0, _lodash.startCase)(_name) + ' @' + _username + '* **' + state + ' issue** in ' + _projectFullPath + '. \n      \n---\n\n      Title: ' + (0, _lodash.capitalize)(title) + ' \n      Due Date: ' + due_date + ' \n\n[Visit Issue](' + url + ') \n\n';
+        str = '**[ISSUE #' + iid + '](' + url + '):**\n      \n---\n\n*' + (0, _lodash.startCase)(_name) + ' [@' + _username + '](https://gitlab.com/' + _username + ')* **' + state + ' issue** in [' + _projectFullPath + '](' + _webUrl + '). \n      \n---\n\n      Title: ' + (0, _lodash.capitalize)(title) + '\n      Due Date: ' + due_date + ' \n\n';
         str += assignees.length > 0 ? 'Assigned To: \n\n' : '';
         assignees.map(function (_ref, index) {
           var name = _ref.name,
@@ -112,7 +114,9 @@ exports.default = router.post('', function (req, res) {
             _name2 = _req$body3$user.name,
             _username2 = _req$body3$user.username,
             _project_id2 = _req$body3.project_id,
-            _projectFullPath2 = _req$body3.project.path_with_namespace,
+            _req$body3$project = _req$body3.project,
+            _projectFullPath2 = _req$body3$project.path_with_namespace,
+            _webUrl2 = _req$body3$project.web_url,
             _req$body3$object_att = _req$body3.object_attributes,
             note = _req$body3$object_att.note,
             notableType = _req$body3$object_att.noteable_type,
@@ -132,7 +136,7 @@ exports.default = router.post('', function (req, res) {
         projectId = _project_id2;
 
         if ((0, _lodash.size)(issue) > 0) {
-          str = '**ISSUE #' + _iid + ':**\n        \n---\n\n*' + (0, _lodash.startCase)(_name2) + ' @' + _username2 + '* **commented** on issue #' + _iid + ' in ' + _projectFullPath2 + '.\n        \n---\n\n        Issue State: ' + _state + ' \n\n        Title: ' + (0, _lodash.capitalize)(_title) + ' \n\n[Visit Issue](' + _url + ')';
+          str = '**[ISSUE #' + _iid + '](' + _url + '):**\n        \n---\n\n*' + (0, _lodash.startCase)(_name2) + ' [@' + _username2 + '](https://gitlab.com/' + _username2 + ')* **commented** on issue #' + _iid + ' in [' + _projectFullPath2 + '](' + _webUrl2 + ').\n        \n---\n\n        Issue State: ' + _state + ' \n\n        Title: ' + (0, _lodash.capitalize)(_title) + ' \n\n        Note: ' + (0, _lodash.capitalize)(note);
         }
         break;
       }
