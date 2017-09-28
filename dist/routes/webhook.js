@@ -68,7 +68,7 @@ exports.default = router.post('', function (req, res) {
               name = commit.author.name,
               url = commit.url;
 
-          str += '  ' + (index + 1) + '. *' + (0, _lodash.startCase)(name) + '* **committed**: ' + message + '\n[Visit Commit](' + url + ')\n';
+          str += '  ' + (index + 1) + '. *' + (0, _lodash.startCase)(name) + '* **committed**: [' + message + '](' + url + ')\n';
         });
         break;
       }
@@ -102,7 +102,7 @@ exports.default = router.post('', function (req, res) {
         assignees.map(function (_ref, index) {
           var name = _ref.name,
               username = _ref.username;
-          return str += '  ' + (index + 1) + '. *' + (0, _lodash.startCase)(name) + ' @' + username + '*';
+          return str += '  ' + (index + 1) + '. *' + (0, _lodash.startCase)(name) + ' [@' + username + '](https://gitlab.com/' + username + ')*';
         });
         break;
       }

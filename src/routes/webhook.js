@@ -39,7 +39,7 @@ export default router.post('', (req, res) => {
       str += event === eventTypes.Push_Hook ? `Commits:\n\n` : ''
       commits.map((commit, index) => {
         const { id, message, author: { name }, url } = commit
-        str += `  ${index + 1}. *${startCase(name)}* **committed**: ${message}\n[Visit Commit](${url})\n`
+        str += `  ${index + 1}. *${startCase(name)}* **committed**: [${message}](${url})\n`
       })
       break
     }
@@ -59,7 +59,7 @@ export default router.post('', (req, res) => {
       Title: ${capitalize(title)}
       Due Date: ${due_date} \n\n`
       str += assignees.length > 0 ? `Assigned To: \n\n` : ''
-      assignees.map(({ name, username }, index) => str += `  ${index + 1}. *${startCase(name)} @${username}*`)
+      assignees.map(({ name, username }, index) => str += `  ${index + 1}. *${startCase(name)} [@${username}](https://gitlab.com/${username})*`)
       break
     }
 
