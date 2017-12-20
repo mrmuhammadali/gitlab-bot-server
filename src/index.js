@@ -1,10 +1,12 @@
+// libs
 const bodyParser = require('body-parser')
 const express = require('express')
 const builder = require('botbuilder')
 
+// src
 import * as routes from './routes'
 import models from './models'
-import { AUTH_CALLBACK_ENDPOINT, MESSAGE, SKYPE_BOT_URL, SKYPE_ADDRESS, SKYPE_CREDENTIALS } from './utils'
+import { AUTH_CALLBACK_ENDPOINT, MESSAGE, SKYPE_BOT_URL, SKYPE_ADDRESS, SKYPE_CREDENTIALS } from './constants'
 import { TelegramBot } from './TelegramBot'
 import { BotOperations } from './botOperations'
 

@@ -1,5 +1,5 @@
 const Sequelize = require('sequelize');
-import { DB_CONFIG } from "../utils"
+import { DB_CONFIG } from "../constants"
 
 let sequelize = ''
 if (process.env.DATABASE_URL) {

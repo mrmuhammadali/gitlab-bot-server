@@ -8,7 +8,7 @@ var _models = require('./models');
 
 var _models2 = _interopRequireDefault(_models);
 
-var _utils = require('./utils');
+var _constants = require('./constants');
 
 var _TelegramBot = require('./TelegramBot');
 
@@ -18,17 +18,21 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
+// libs
 var bodyParser = require('body-parser');
 var express = require('express');
 var builder = require('botbuilder');
 
+// src
+
+
 var telegramBot = new _TelegramBot.TelegramBot();
 var botOperations = new _botOperations.BotOperations();
-var connector = new builder.ChatConnector(_utils.SKYPE_CREDENTIALS);
-var app = express().use(bodyParser.json()).use(_utils.AUTH_CALLBACK_ENDPOINT, routes.authCallback).use("/webhook", routes.webhook);
+var connector = new builder.ChatConnector(_constants.SKYPE_CREDENTIALS);
+var app = express().use(bodyParser.json()).use(_constants.AUTH_CALLBACK_ENDPOINT, routes.authCallback).use("/webhook", routes.webhook);
 
 app.get('/', function (req, res) {
-  return res.redirect(_utils.SKYPE_BOT_URL);
+  return res.redirect(_constants.SKYPE_BOT_URL);
 });
 
 app.get('/get-all', function (req, res) {
@@ -55,7 +59,7 @@ var skypeBot = new builder.UniversalBot(connector, function (session) {
 
 skypeBot.dialog('askSpaceIntegrate', [function (session, args) {
   session.dialogData.projects = args.projects;
-  builder.Prompts.choice(session, _utils.MESSAGE.CHOOSE_SAPCE_INTEGRATE, args.projects);
+  builder.Prompts.choice(session, _constants.MESSAGE.CHOOSE_SAPCE_INTEGRATE, args.projects);
 }, function (session, results) {
   var _results$response = results.response,
       index = _results$response.index,
@@ -71,7 +75,7 @@ skypeBot.dialog('askSpaceIntegrate', [function (session, args) {
 
 skypeBot.dialog('askSpaceDelete', [function (session, args) {
   session.dialogData.projects = args.projects;
-  builder.Prompts.choice(session, _utils.MESSAGE.CHOOSE_SAPCE_DELETE, args.projects);
+  builder.Prompts.choice(session, _constants.MESSAGE.CHOOSE_SAPCE_DELETE, args.projects);
 }, function (session, results) {
   var _results$response2 = results.response,
       index = _results$response2.index,

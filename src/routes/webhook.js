@@ -1,11 +1,18 @@
-import * as utils from '../utils'
+// libs
+const builder = require('botbuilder');
+const router = require('express').Router()
+import capitalize from 'lodash/capitalize'
+import lowerCase from 'lodash/lowerCase'
+import size from 'lodash/size'
+import startCase from 'lodash/startCase'
+import unescape from 'lodash/unescape'
+import upperCase from 'lodash/upperCase'
+
+// src
+import * as utils from '../constants'
 import models from '../models'
 import { TelegramBot } from "../TelegramBot"
 import * as eventTypes from '../eventTypes'
-
-const builder = require('botbuilder');
-const router = require('express').Router()
-import { capitalize, lowerCase, size, startCase, unescape, upperCase } from 'lodash'
 
 const telegramBot = new TelegramBot()
 const connector = new builder.ChatConnector(utils.SKYPE_CREDENTIALS);

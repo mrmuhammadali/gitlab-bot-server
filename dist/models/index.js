@@ -1,6 +1,6 @@
 'use strict';
 
-var _utils = require('../utils');
+var _constants = require('../constants');
 
 var Sequelize = require('sequelize');
 
@@ -9,7 +9,7 @@ var sequelize = '';
 if (process.env.DATABASE_URL) {
   sequelize = new Sequelize(process.env.DATABASE_URL, { options: { dialect: 'postgres' } });
 } else {
-  sequelize = new Sequelize(_utils.DB_CONFIG.name, _utils.DB_CONFIG.user, _utils.DB_CONFIG.password, _utils.DB_CONFIG.options);
+  sequelize = new Sequelize(_constants.DB_CONFIG.name, _constants.DB_CONFIG.user, _constants.DB_CONFIG.password, _constants.DB_CONFIG.options);
 }
 
 var models = ['Chat', 'Integration'];

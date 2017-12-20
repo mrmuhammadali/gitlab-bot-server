@@ -1,4 +1,4 @@
-import * as utils from '../utils'
+import * as utils from '../constants'
 import models from '../models'
 import { TelegramBot } from "../TelegramBot"
 

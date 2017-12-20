@@ -1,13 +1,16 @@
-import * as utils from './utils'
+// src
+import * as utils from './constants'
 import models from './models'
 import { TelegramBot } from './TelegramBot'
 
-const request = require('request-promise');
-const oauth2 = require('simple-oauth2').create(utils.GITLAB_CREDENTIALS)
-const telegramBot = new TelegramBot()
+// libs
 import get from "lodash/get"
 import words from "lodash/words"
 import without from "lodash/without"
+const request = require('request-promise')
+const oauth2 = require('simple-oauth2').create(utils.GITLAB_CREDENTIALS)
+
+const telegramBot = new TelegramBot()
 
 export class BotOperations {
 

@@ -6,9 +6,33 @@ Object.defineProperty(exports, "__esModule", {
 
 var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
-var _utils = require('../utils');
+var _capitalize = require('lodash/capitalize');
 
-var utils = _interopRequireWildcard(_utils);
+var _capitalize2 = _interopRequireDefault(_capitalize);
+
+var _lowerCase = require('lodash/lowerCase');
+
+var _lowerCase2 = _interopRequireDefault(_lowerCase);
+
+var _size = require('lodash/size');
+
+var _size2 = _interopRequireDefault(_size);
+
+var _startCase = require('lodash/startCase');
+
+var _startCase2 = _interopRequireDefault(_startCase);
+
+var _unescape = require('lodash/unescape');
+
+var _unescape2 = _interopRequireDefault(_unescape);
+
+var _upperCase = require('lodash/upperCase');
+
+var _upperCase2 = _interopRequireDefault(_upperCase);
+
+var _constants = require('../constants');
+
+var utils = _interopRequireWildcard(_constants);
 
 var _models = require('../models');
 
@@ -20,14 +44,15 @@ var _eventTypes = require('../eventTypes');
 
 var eventTypes = _interopRequireWildcard(_eventTypes);
 
-var _lodash = require('lodash');
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
-
+// libs
 var builder = require('botbuilder');
 var router = require('express').Router();
+
+// src
 
 
 var telegramBot = new _TelegramBot.TelegramBot();
@@ -63,7 +88,7 @@ exports.default = router.post('', function (req, res) {
         // str = `**${upperCase(objectKind)}:**
         // \n------\n\n*${startCase(name)} [@${username}](https://gitlab.com/${username})* **${lowerCase(objectKind)}ed** ${totalCommitsCount ? `${totalCommitsCount} commit(s)` : ''} in${branch ? ` branch '[${branch}](${webUrl}/tree/${branch})' of` : ''} [${projectFullPath}](${webUrl}).
         // \n------\n`
-        str = '**' + (0, _lodash.upperCase)(objectKind) + ':**\n      \n------\n\n*' + (0, _lodash.startCase)(name) + ' @' + username + '* **' + (0, _lodash.lowerCase)(objectKind) + 'ed** ' + (totalCommitsCount ? totalCommitsCount + ' commit(s)' : '') + ' in' + (branch ? ' branch \'' + branch + '\' of' : '') + ' ' + projectFullPath + '.\n      \n------\n';
+        str = '**' + (0, _upperCase2.default)(objectKind) + ':**\n      \n------\n\n*' + (0, _startCase2.default)(name) + ' @' + username + '* **' + (0, _lowerCase2.default)(objectKind) + 'ed** ' + (totalCommitsCount ? totalCommitsCount + ' commit(s)' : '') + ' in' + (branch ? ' branch \'' + branch + '\' of' : '') + ' ' + projectFullPath + '.\n      \n------\n';
         str += event === eventTypes.Push_Hook ? 'Commits:\n\n' : '';
         commits.map(function (commit, index) {
           var id = commit.id,
@@ -71,7 +96,7 @@ exports.default = router.post('', function (req, res) {
               name = commit.author.name,
               url = commit.url;
 
-          str += '  ' + (index + 1) + '. *' + (0, _lodash.startCase)(name) + '* **committed**: [' + message + '](' + url + ')\n';
+          str += '  ' + (index + 1) + '. *' + (0, _startCase2.default)(name) + '* **committed**: [' + message + '](' + url + ')\n';
         });
         break;
       }
@@ -105,7 +130,7 @@ exports.default = router.post('', function (req, res) {
         // \n---\n
         // Title: ${capitalize(title)}
         // Due Date: ${due_date} \n\n`
-        str = '**[ISSUE #' + iid + '](' + url + '):**\n      \n---\n\n*' + (0, _lodash.startCase)(_name) + ' @' + _username + '* **' + state + ' issue** in ' + _projectFullPath + '. \n      \n---\n\n      Title: ' + (0, _lodash.capitalize)(title) + '\n      Due Date: ' + due_date + ' \n\n';
+        str = '**[ISSUE #' + iid + '](' + url + '):**\n      \n---\n\n*' + (0, _startCase2.default)(_name) + ' @' + _username + '* **' + state + ' issue** in ' + _projectFullPath + '. \n      \n---\n\n      Title: ' + (0, _capitalize2.default)(title) + '\n      Due Date: ' + due_date + ' \n\n';
         str += assignees.length > 0 ? 'Assigned To: \n\n' : '';
         // assignees.forEach(({ name, username }, index) =>
         //   str += `  ${index + 1}. *${startCase(name)} [@${username}](https://gitlab.com/${username})*`
@@ -113,7 +138,7 @@ exports.default = router.post('', function (req, res) {
         assignees.forEach(function (_ref, index) {
           var name = _ref.name,
               username = _ref.username;
-          return str += '  ' + (index + 1) + '. *' + (0, _lodash.startCase)(name) + ' @' + username + '*';
+          return str += '  ' + (index + 1) + '. *' + (0, _startCase2.default)(name) + ' @' + username + '*';
         });
         break;
       }
@@ -146,8 +171,8 @@ exports.default = router.post('', function (req, res) {
 
         projectId = _project_id2;
 
-        if ((0, _lodash.size)(issue) > 0) {
-          str = '**[ISSUE #' + _iid + '](' + _url + '):**\n        \n---\n\n*' + (0, _lodash.startCase)(_name2) + ' [@' + _username2 + '](https://gitlab.com/' + _username2 + ')* **commented** on issue #' + _iid + ' in [' + _projectFullPath2 + '](' + _webUrl2 + ').\n        \n---\n\n        Issue State: ' + _state + ' \n\n        Title: ' + (0, _lodash.capitalize)(_title) + ' \n\n        Note: ' + (0, _lodash.capitalize)(note);
+        if ((0, _size2.default)(issue) > 0) {
+          str = '**[ISSUE #' + _iid + '](' + _url + '):**\n        \n---\n\n*' + (0, _startCase2.default)(_name2) + ' [@' + _username2 + '](https://gitlab.com/' + _username2 + ')* **commented** on issue #' + _iid + ' in [' + _projectFullPath2 + '](' + _webUrl2 + ').\n        \n---\n\n        Issue State: ' + _state + ' \n\n        Title: ' + (0, _capitalize2.default)(_title) + ' \n\n        Note: ' + (0, _capitalize2.default)(note);
         }
         break;
       }
@@ -163,11 +188,11 @@ exports.default = router.post('', function (req, res) {
 
         if (/[a-z]/.test(chatId)) {
           var address = _extends({}, utils.SKYPE_ADDRESS, { conversation: { id: chatId } });
-          var reply = new builder.Message().address(address).text((0, _lodash.unescape)(str));
+          var reply = new builder.Message().address(address).text((0, _unescape2.default)(str));
 
           skypeBot.send(reply);
         } else {
-          telegramBot.sendMessage(chatId, (0, _lodash.unescape)(str));
+          telegramBot.sendMessage(chatId, (0, _unescape2.default)(str));
         }
       });
     }
