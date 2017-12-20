@@ -5,7 +5,9 @@ import { TelegramBot } from './TelegramBot'
 const request = require('request-promise');
 const oauth2 = require('simple-oauth2').create(utils.GITLAB_CREDENTIALS)
 const telegramBot = new TelegramBot()
-import { get, words, without } from "lodash"
+import get from "lodash/get"
+import words from "lodash/words"
+import without from "lodash/without"
 
 export class BotOperations {
 
@@ -18,9 +20,9 @@ export class BotOperations {
       case COMMANDS.START:
       case COMMANDS.HELP: {
         if (isSkype) {
-          session.send(utils.MESSAGE.INTRODUCE_BOT)
+          session.send(utils.MESSAGE.INTRODUCE_BOT_SKYPE)
         } else {
-          telegramBot.sendMessage(chatId, utils.MESSAGE.INTRODUCE_BOT);
+          telegramBot.sendMessage(chatId, utils.MESSAGE.INTRODUCE_BOT_TELEGRAM);
         }
         break;
       }

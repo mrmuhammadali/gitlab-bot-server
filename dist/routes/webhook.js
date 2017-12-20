@@ -60,7 +60,10 @@ exports.default = router.post('', function (req, res) {
 
         var branch = ref && ref.substr(ref.lastIndexOf('/') + 1);
         projectId = project_id;
-        str = '**' + (0, _lodash.upperCase)(objectKind) + ':**\n      \n------\n\n*' + (0, _lodash.startCase)(name) + ' [@' + username + '](https://gitlab.com/' + username + ')* **' + (0, _lodash.lowerCase)(objectKind) + 'ed** ' + (totalCommitsCount ? totalCommitsCount + ' commit(s)' : '') + ' in' + (branch ? ' branch \'[' + branch + '](' + webUrl + '/tree/' + branch + ')\' of' : '') + ' [' + projectFullPath + '](' + webUrl + ').\n      \n------\n';
+        // str = `**${upperCase(objectKind)}:**
+        // \n------\n\n*${startCase(name)} [@${username}](https://gitlab.com/${username})* **${lowerCase(objectKind)}ed** ${totalCommitsCount ? `${totalCommitsCount} commit(s)` : ''} in${branch ? ` branch '[${branch}](${webUrl}/tree/${branch})' of` : ''} [${projectFullPath}](${webUrl}).
+        // \n------\n`
+        str = '**' + (0, _lodash.upperCase)(objectKind) + ':**\n      \n------\n\n*' + (0, _lodash.startCase)(name) + ' @' + username + '* **' + (0, _lodash.lowerCase)(objectKind) + 'ed** ' + (totalCommitsCount ? totalCommitsCount + ' commit(s)' : '') + ' in' + (branch ? ' branch \'' + branch + '\' of' : '') + ' ' + projectFullPath + '.\n      \n------\n';
         str += event === eventTypes.Push_Hook ? 'Commits:\n\n' : '';
         commits.map(function (commit, index) {
           var id = commit.id,
@@ -97,12 +100,20 @@ exports.default = router.post('', function (req, res) {
 
 
         projectId = _project_id;
-        str = '**[ISSUE #' + iid + '](' + url + '):**\n      \n---\n\n*' + (0, _lodash.startCase)(_name) + ' [@' + _username + '](https://gitlab.com/' + _username + ')* **' + state + ' issue** in [' + _projectFullPath + '](' + _webUrl + '). \n      \n---\n\n      Title: ' + (0, _lodash.capitalize)(title) + '\n      Due Date: ' + due_date + ' \n\n';
+        // str = `**[ISSUE #${iid}](${url}):**
+        // \n---\n\n*${startCase(name)} [@${username}](https://gitlab.com/${username})* **${state} issue** in [${projectFullPath}](${webUrl}).
+        // \n---\n
+        // Title: ${capitalize(title)}
+        // Due Date: ${due_date} \n\n`
+        str = '**[ISSUE #' + iid + '](' + url + '):**\n      \n---\n\n*' + (0, _lodash.startCase)(_name) + ' @' + _username + '* **' + state + ' issue** in ' + _projectFullPath + '. \n      \n---\n\n      Title: ' + (0, _lodash.capitalize)(title) + '\n      Due Date: ' + due_date + ' \n\n';
         str += assignees.length > 0 ? 'Assigned To: \n\n' : '';
-        assignees.map(function (_ref, index) {
+        // assignees.forEach(({ name, username }, index) =>
+        //   str += `  ${index + 1}. *${startCase(name)} [@${username}](https://gitlab.com/${username})*`
+        // )
+        assignees.forEach(function (_ref, index) {
           var name = _ref.name,
               username = _ref.username;
-          return str += '  ' + (index + 1) + '. *' + (0, _lodash.startCase)(name) + ' [@' + username + '](https://gitlab.com/' + username + ')*';
+          return str += '  ' + (index + 1) + '. *' + (0, _lodash.startCase)(name) + ' @' + username + '*';
         });
         break;
       }

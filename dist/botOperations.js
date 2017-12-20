@@ -19,7 +19,17 @@ var _models2 = _interopRequireDefault(_models);
 
 var _TelegramBot = require('./TelegramBot');
 
-var _lodash = require('lodash');
+var _get = require('lodash/get');
+
+var _get2 = _interopRequireDefault(_get);
+
+var _words = require('lodash/words');
+
+var _words2 = _interopRequireDefault(_words);
+
+var _without = require('lodash/without');
+
+var _without2 = _interopRequireDefault(_without);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -37,18 +47,18 @@ var BotOperations = exports.BotOperations = function BotOperations() {
   _classCallCheck(this, BotOperations);
 
   this.handleCommands = function (command, isSkype, session) {
-    command = (0, _lodash.without)((0, _lodash.words)(command), 'GitLab', 'Bot')[0].toLowerCase();
+    command = (0, _without2.default)((0, _words2.default)(command), 'GitLab', 'Bot')[0].toLowerCase();
     var COMMANDS = utils.COMMANDS;
-    var chatId = isSkype ? (0, _lodash.get)(session, 'message.address.conversation.id', '') + '' : (0, _lodash.get)(session, 'chat.id', '') + '';
+    var chatId = isSkype ? (0, _get2.default)(session, 'message.address.conversation.id', '') + '' : (0, _get2.default)(session, 'chat.id', '') + '';
 
     switch (command) {
       case COMMANDS.START:
       case COMMANDS.HELP:
         {
           if (isSkype) {
-            session.send(utils.MESSAGE.INTRODUCE_BOT);
+            session.send(utils.MESSAGE.INTRODUCE_BOT_SKYPE);
           } else {
-            telegramBot.sendMessage(chatId, utils.MESSAGE.INTRODUCE_BOT);
+            telegramBot.sendMessage(chatId, utils.MESSAGE.INTRODUCE_BOT_TELEGRAM);
           }
           break;
         }
@@ -157,7 +167,7 @@ var BotOperations = exports.BotOperations = function BotOperations() {
 
     var text = session.reply_to_message.text;
 
-    var command = (0, _lodash.without)((0, _lodash.words)(text), 'GitLab', 'Bot', 'MrGitLabBot')[0];
+    var command = (0, _without2.default)((0, _words2.default)(text), 'GitLab', 'Bot', 'MrGitLabBot')[0];
 
     console.log("Command: ", command);
 
@@ -317,7 +327,7 @@ var BotOperations = exports.BotOperations = function BotOperations() {
         if (isSkype) {
           session.send(message);
         } else {
-          var reply_to_message_id = (0, _lodash.get)(session, 'message_id', 0);
+          var reply_to_message_id = (0, _get2.default)(session, 'message_id', 0);
           telegramBot.sendMessage(chatId, message, { reply_to_message_id: reply_to_message_id });
         }
       }
@@ -343,7 +353,7 @@ var BotOperations = exports.BotOperations = function BotOperations() {
         if (isSkype) {
           session.beginDialog('askSpaceDelete', { projects: skypeProjects });
         } else {
-          var reply_to_message_id = (0, _lodash.get)(session, 'message_id', 0);
+          var reply_to_message_id = (0, _get2.default)(session, 'message_id', 0);
           var opts = {
             reply_to_message_id: reply_to_message_id,
             reply_markup: {

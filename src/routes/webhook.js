@@ -33,8 +33,11 @@ export default router.post('', (req, res) => {
 
       const branch = ref && ref.substr(ref.lastIndexOf('/') + 1)
       projectId = project_id
+      // str = `**${upperCase(objectKind)}:**
+      // \n------\n\n*${startCase(name)} [@${username}](https://gitlab.com/${username})* **${lowerCase(objectKind)}ed** ${totalCommitsCount ? `${totalCommitsCount} commit(s)` : ''} in${branch ? ` branch '[${branch}](${webUrl}/tree/${branch})' of` : ''} [${projectFullPath}](${webUrl}).
+      // \n------\n`
       str = `**${upperCase(objectKind)}:**
-      \n------\n\n*${startCase(name)} [@${username}](https://gitlab.com/${username})* **${lowerCase(objectKind)}ed** ${totalCommitsCount ? `${totalCommitsCount} commit(s)` : ''} in${branch ? ` branch '[${branch}](${webUrl}/tree/${branch})' of` : ''} [${projectFullPath}](${webUrl}).
+      \n------\n\n*${startCase(name)} @${username}* **${lowerCase(objectKind)}ed** ${totalCommitsCount ? `${totalCommitsCount} commit(s)` : ''} in${branch ? ` branch '${branch}' of` : ''} ${projectFullPath}.
       \n------\n`
       str += event === eventTypes.Push_Hook ? `Commits:\n\n` : ''
       commits.map((commit, index) => {
@@ -53,13 +56,23 @@ export default router.post('', (req, res) => {
       } = req.body
 
       projectId = project_id
+      // str = `**[ISSUE #${iid}](${url}):**
+      // \n---\n\n*${startCase(name)} [@${username}](https://gitlab.com/${username})* **${state} issue** in [${projectFullPath}](${webUrl}).
+      // \n---\n
+      // Title: ${capitalize(title)}
+      // Due Date: ${due_date} \n\n`
       str = `**[ISSUE #${iid}](${url}):**
-      \n---\n\n*${startCase(name)} [@${username}](https://gitlab.com/${username})* **${state} issue** in [${projectFullPath}](${webUrl}). 
+      \n---\n\n*${startCase(name)} @${username}* **${state} issue** in ${projectFullPath}. 
       \n---\n
       Title: ${capitalize(title)}
       Due Date: ${due_date} \n\n`
       str += assignees.length > 0 ? `Assigned To: \n\n` : ''
-      assignees.map(({ name, username }, index) => str += `  ${index + 1}. *${startCase(name)} [@${username}](https://gitlab.com/${username})*`)
+      // assignees.forEach(({ name, username }, index) =>
+      //   str += `  ${index + 1}. *${startCase(name)} [@${username}](https://gitlab.com/${username})*`
+      // )
+      assignees.forEach(({ name, username }, index) =>
+        str += `  ${index + 1}. *${startCase(name)} @${username}*`
+      )
       break
     }
 

@@ -72,11 +72,17 @@ export const MESSAGE = {
   SPACE_DELETED: " project deleted from this chat.",
   LIST_INTEGRATION:'Following projects are integrated:\n',
   DATABASE_ERROR: "Process failed! Try again later.",
-  INTRODUCE_BOT: `I'm a GitLab bot. I'll send notifications of activities in a project.\n\nAvailable commands:
+  INTRODUCE_BOT_TELEGRAM: `I'm a GitLab bot. I'll send notifications of activities in a project.\n\nAvailable commands:
   /connect - Authorize bot via OAuth
   /newintegration - Add integration with a GitLab repository
   /listintegrations - List all current integrations
   /delintegration - Delete integration
   /help - List available commands
-  /cancel - Cancel the current command`
+  /cancel - Cancel the current command`,
+  INTRODUCE_BOT_SKYPE: `I'm a GitLab bot. I'll send notifications of activities in a project.\n\nAvailable commands:
+  connect @GitLab Bot - Authorize bot via OAuth
+  newintegration @GitLab Bot - Add integration with a GitLab repository
+  listintegrations @GitLab Bot - List all current integrations
+  delintegration @GitLab Bot - Delete integration
+  help @GitLab Bot - List available commands`
 }
