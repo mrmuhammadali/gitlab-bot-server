@@ -85,10 +85,7 @@ exports.default = router.post('', function (req, res) {
 
         var branch = ref && ref.substr(ref.lastIndexOf('/') + 1);
         projectId = project_id;
-        // str = `**${upperCase(objectKind)}:**
-        // \n------\n\n*${startCase(name)} [@${username}](https://gitlab.com/${username})* **${lowerCase(objectKind)}ed** ${totalCommitsCount ? `${totalCommitsCount} commit(s)` : ''} in${branch ? ` branch '[${branch}](${webUrl}/tree/${branch})' of` : ''} [${projectFullPath}](${webUrl}).
-        // \n------\n`
-        str = '**' + (0, _upperCase2.default)(objectKind) + ':**\n      \n------\n\n*' + (0, _startCase2.default)(name) + ' @' + username + '* **' + (0, _lowerCase2.default)(objectKind) + 'ed** ' + (totalCommitsCount ? totalCommitsCount + ' commit(s)' : '') + ' in' + (branch ? ' branch \'' + branch + '\' of' : '') + ' ' + projectFullPath + '.\n      \n------\n';
+        str = '**' + (0, _upperCase2.default)(objectKind) + ':**\n      \n------\n\n*' + (0, _startCase2.default)(name) + ' [@' + username + '](https://gitlab.com/' + username + ')* **' + (0, _lowerCase2.default)(objectKind) + 'ed** ' + (totalCommitsCount ? totalCommitsCount + ' commit(s)' : '') + ' in' + (branch ? ' branch \'[' + branch + '](' + webUrl + '/tree/' + branch + ')\' of' : '') + ' [' + projectFullPath + '](' + webUrl + ').\n      \n------\n';
         str += event === eventTypes.Push_Hook ? 'Commits:\n\n' : '';
         commits.map(function (commit, index) {
           var id = commit.id,
@@ -125,20 +122,12 @@ exports.default = router.post('', function (req, res) {
 
 
         projectId = _project_id;
-        // str = `**[ISSUE #${iid}](${url}):**
-        // \n---\n\n*${startCase(name)} [@${username}](https://gitlab.com/${username})* **${state} issue** in [${projectFullPath}](${webUrl}).
-        // \n---\n
-        // Title: ${capitalize(title)}
-        // Due Date: ${due_date} \n\n`
-        str = '**[ISSUE #' + iid + '](' + url + '):**\n      \n---\n\n*' + (0, _startCase2.default)(_name) + ' @' + _username + '* **' + state + ' issue** in ' + _projectFullPath + '. \n      \n---\n\n      Title: ' + (0, _capitalize2.default)(title) + '\n      Due Date: ' + due_date + ' \n\n';
+        str = '**[ISSUE #' + iid + '](' + url + '):**\n      \n---\n\n*' + (0, _startCase2.default)(_name) + ' [@' + _username + '](https://gitlab.com/' + _username + ')* **' + state + ' issue** in [' + _projectFullPath + '](' + _webUrl + ').\n      \n---\n\n      Title: ' + (0, _capitalize2.default)(title) + '\n      Due Date: ' + due_date + ' \n\n';
         str += assignees.length > 0 ? 'Assigned To: \n\n' : '';
-        // assignees.forEach(({ name, username }, index) =>
-        //   str += `  ${index + 1}. *${startCase(name)} [@${username}](https://gitlab.com/${username})*`
-        // )
         assignees.forEach(function (_ref, index) {
           var name = _ref.name,
               username = _ref.username;
-          return str += '  ' + (index + 1) + '. *' + (0, _startCase2.default)(name) + ' @' + username + '*';
+          return str += '  ' + (index + 1) + '. *' + (0, _startCase2.default)(name) + ' [@' + username + '](https://gitlab.com/' + username + ')*';
         });
         break;
       }
@@ -207,7 +196,7 @@ exports.default = router.post('', function (req, res) {
 
         projectId = _project_id3;
 
-        str = '**[' + (0, _upperCase2.default)(_objectKind) + '](' + mergeRequestUrl + '):**\n        \n---\n\n*' + (0, _startCase2.default)(_name3) + ' @' + _username3 + '* **requested to merge** ' + branchMessage + '.\n        \n---\n\n        Last Commit: *' + (0, _startCase2.default)(commitAuthorName) + '* **committed**: [' + commitMessage + '](' + commitUrl + ')';
+        str = '**[' + (0, _upperCase2.default)(_objectKind) + '](' + mergeRequestUrl + '):**\n        \n---\n\n*' + (0, _startCase2.default)(_name3) + ' [@' + _username3 + '](https://gitlab.com/' + _username3 + ')* **requested to merge** ' + branchMessage + '.\n        \n---\n\n        Last Commit: *' + (0, _startCase2.default)(commitAuthorName) + '* **committed**: [' + commitMessage + '](' + commitUrl + ')';
 
         break;
       }
