@@ -25,8 +25,8 @@ export default router.post('', (req, res) => {
   let projectId = 0
 
   switch(event) {
-    case eventTypes.Push_Hook:
-    case eventTypes.Tag_Push_Hook: {
+    case eventTypes.PUSH_HOOK:
+    case eventTypes.TAG_PUSH_HOOK: {
       const {
         object_kind: objectKind,
         user_name: name,
@@ -54,7 +54,7 @@ export default router.post('', (req, res) => {
       break
     }
 
-    case eventTypes.Issue_Hook: {
+    case eventTypes.ISSUE_HOOK: {
       const {
         user: { name, username },
         project: { path_with_namespace: projectFullPath, web_url: webUrl },
@@ -83,7 +83,7 @@ export default router.post('', (req, res) => {
       break
     }
 
-    case eventTypes.Note_Hook: {
+    case eventTypes.NOTE_HOOK: {
       const {
         user: { name, username },
         project_id,
@@ -103,6 +103,35 @@ export default router.post('', (req, res) => {
         Title: ${capitalize(title)} \n
         Note: ${capitalize(note)}`
       }
+      break
+    }
+    case eventTypes.MERGE_REQUEST_HOOK: {
+      const {
+        object_kind: objectKind,
+        user: { name, username },
+        project: { path_with_namespace: projectFullPath, web_url: webUrl },
+        object_attributes: {
+          target_project_id: project_id,
+          target_branch,
+          source_branch,
+          source: { path_with_namespace: sourceProjectFullPath, web_url: sourceWebUrl },
+          target: { path_with_namespace: targetProjectFullPath, web_url: targetWebUrl },
+          last_commit: { message: commitMessage, author: { name: commitAuthorName }, url: commitUrl },
+          url: mergeRequestUrl
+        },
+      } = req.body
+
+      const branchMessage = sourceProjectFullPath === targetProjectFullPath ?
+        `${source_branch} in ${target_branch} of ${targetProjectFullPath}` :
+        `${source_branch} of ${sourceProjectFullPath} in ${target_branch} of ${targetProjectFullPath}`
+
+      projectId = project_id
+
+      str = `**[${upperCase(objectKind)}](${mergeRequestUrl}):**
+        \n---\n\n*${startCase(name)} @${username}* **requested to merge** ${branchMessage}.
+        \n---\n
+        Last Commit: *${startCase(commitAuthorName)}* **committed**: [${commitMessage}](${commitUrl})`
+
       break
     }
   }

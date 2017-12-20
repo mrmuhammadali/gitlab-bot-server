@@ -66,8 +66,8 @@ exports.default = router.post('', function (req, res) {
   var projectId = 0;
 
   switch (event) {
-    case eventTypes.Push_Hook:
-    case eventTypes.Tag_Push_Hook:
+    case eventTypes.PUSH_HOOK:
+    case eventTypes.TAG_PUSH_HOOK:
       {
         var _req$body = req.body,
             objectKind = _req$body.object_kind,
@@ -101,7 +101,7 @@ exports.default = router.post('', function (req, res) {
         break;
       }
 
-    case eventTypes.Issue_Hook:
+    case eventTypes.ISSUE_HOOK:
       {
         var _req$body2 = req.body,
             _req$body2$user = _req$body2.user,
@@ -143,7 +143,7 @@ exports.default = router.post('', function (req, res) {
         break;
       }
 
-    case eventTypes.Note_Hook:
+    case eventTypes.NOTE_HOOK:
       {
         var _req$body3 = req.body,
             _req$body3$user = _req$body3.user,
@@ -174,6 +174,41 @@ exports.default = router.post('', function (req, res) {
         if ((0, _size2.default)(issue) > 0) {
           str = '**[ISSUE #' + _iid + '](' + _url + '):**\n        \n---\n\n*' + (0, _startCase2.default)(_name2) + ' [@' + _username2 + '](https://gitlab.com/' + _username2 + ')* **commented** on issue #' + _iid + ' in [' + _projectFullPath2 + '](' + _webUrl2 + ').\n        \n---\n\n        Issue State: ' + _state + ' \n\n        Title: ' + (0, _capitalize2.default)(_title) + ' \n\n        Note: ' + (0, _capitalize2.default)(note);
         }
+        break;
+      }
+    case eventTypes.MERGE_REQUEST_HOOK:
+      {
+        var _req$body4 = req.body,
+            _objectKind = _req$body4.object_kind,
+            _req$body4$user = _req$body4.user,
+            _name3 = _req$body4$user.name,
+            _username3 = _req$body4$user.username,
+            _req$body4$project = _req$body4.project,
+            _projectFullPath3 = _req$body4$project.path_with_namespace,
+            _webUrl3 = _req$body4$project.web_url,
+            _req$body4$object_att = _req$body4.object_attributes,
+            _project_id3 = _req$body4$object_att.target_project_id,
+            target_branch = _req$body4$object_att.target_branch,
+            source_branch = _req$body4$object_att.source_branch,
+            _req$body4$object_att2 = _req$body4$object_att.source,
+            sourceProjectFullPath = _req$body4$object_att2.path_with_namespace,
+            sourceWebUrl = _req$body4$object_att2.web_url,
+            _req$body4$object_att3 = _req$body4$object_att.target,
+            targetProjectFullPath = _req$body4$object_att3.path_with_namespace,
+            targetWebUrl = _req$body4$object_att3.web_url,
+            _req$body4$object_att4 = _req$body4$object_att.last_commit,
+            commitMessage = _req$body4$object_att4.message,
+            commitAuthorName = _req$body4$object_att4.author.name,
+            commitUrl = _req$body4$object_att4.url,
+            mergeRequestUrl = _req$body4$object_att.url;
+
+
+        var branchMessage = sourceProjectFullPath === targetProjectFullPath ? source_branch + ' in ' + target_branch + ' of ' + targetProjectFullPath : source_branch + ' of ' + sourceProjectFullPath + ' in ' + target_branch + ' of ' + targetProjectFullPath;
+
+        projectId = _project_id3;
+
+        str = '**[' + (0, _upperCase2.default)(_objectKind) + '](' + mergeRequestUrl + '):**\n        \n---\n\n*' + (0, _startCase2.default)(_name3) + ' @' + _username3 + '* **requested to merge** ' + branchMessage + '.\n        \n---\n\n        Last Commit: *' + (0, _startCase2.default)(commitAuthorName) + '* **committed**: [' + commitMessage + '](' + commitUrl + ')';
+
         break;
       }
   }
