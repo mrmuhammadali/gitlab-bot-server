@@ -53,7 +53,7 @@ export default router.post('', (req, res) => {
       const branch = ref && ref.substr(ref.lastIndexOf('/') + 1)
       projectId = project_id
       str = `**${upperCase(objectKind)}:**
-      \n------\n\n*${startCase(name)} [@${username}](https://gitlab.com/${username})* **${lowerCase(objectKind)}ed** ${totalCommitsCount ? `${totalCommitsCount} commit(s)` : ''} in${branch ? ` branch '[${branch}](${webUrl}/tree/${branch})' of` : ''} [${projectFullPath}](${webUrl}).
+      \n------\n\n*${startCase(name)} [@${username}](https://gitlab.com/${username})* **${lowerCase(objectKind)}ed** ${totalCommitsCount ? `${totalCommitsCount} commit${totalCommitsCount > 1 ? 's' : ''}` : ''} in${branch ? ` branch '[${branch}](${webUrl}/tree/${branch})' of` : ''} [${projectFullPath}](${webUrl}).
       \n------\n`
       str += event === eventTypes.PUSH_HOOK && totalCommitsCount > 1 ? `${totalCommitsCount > 10 ? 'Last 10 ' : ''}Commits:\n\n` : ''
       const reducedCommits = reduceCommits(commits, totalCommitsCount)

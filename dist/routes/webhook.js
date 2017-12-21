@@ -103,7 +103,7 @@ exports.default = router.post('', function (req, res) {
 
         var branch = ref && ref.substr(ref.lastIndexOf('/') + 1);
         projectId = project_id;
-        str = '**' + (0, _upperCase2.default)(objectKind) + ':**\n      \n------\n\n*' + (0, _startCase2.default)(name) + ' [@' + username + '](https://gitlab.com/' + username + ')* **' + (0, _lowerCase2.default)(objectKind) + 'ed** ' + (totalCommitsCount ? totalCommitsCount + ' commit(s)' : '') + ' in' + (branch ? ' branch \'[' + branch + '](' + webUrl + '/tree/' + branch + ')\' of' : '') + ' [' + projectFullPath + '](' + webUrl + ').\n      \n------\n';
+        str = '**' + (0, _upperCase2.default)(objectKind) + ':**\n      \n------\n\n*' + (0, _startCase2.default)(name) + ' [@' + username + '](https://gitlab.com/' + username + ')* **' + (0, _lowerCase2.default)(objectKind) + 'ed** ' + (totalCommitsCount ? totalCommitsCount + ' commit' + (totalCommitsCount > 1 ? 's' : '') : '') + ' in' + (branch ? ' branch \'[' + branch + '](' + webUrl + '/tree/' + branch + ')\' of' : '') + ' [' + projectFullPath + '](' + webUrl + ').\n      \n------\n';
         str += event === eventTypes.PUSH_HOOK && totalCommitsCount > 1 ? (totalCommitsCount > 10 ? 'Last 10 ' : '') + 'Commits:\n\n' : '';
         var reducedCommits = reduceCommits(commits, totalCommitsCount);
         if (reducedCommits.length > 1) {
