@@ -10,6 +10,14 @@ var _capitalize = require('lodash/capitalize');
 
 var _capitalize2 = _interopRequireDefault(_capitalize);
 
+var _drop = require('lodash/drop');
+
+var _drop2 = _interopRequireDefault(_drop);
+
+var _forEachRight = require('lodash/forEachRight');
+
+var _forEachRight2 = _interopRequireDefault(_forEachRight);
+
 var _lowerCase = require('lodash/lowerCase');
 
 var _lowerCase2 = _interopRequireDefault(_lowerCase);
@@ -59,6 +67,16 @@ var telegramBot = new _TelegramBot.TelegramBot();
 var connector = new builder.ChatConnector(utils.SKYPE_CREDENTIALS);
 var skypeBot = new builder.UniversalBot(connector);
 
+var reduceCommits = function reduceCommits(commits, commitCount) {
+  if (commitCount > 20) {
+    return (0, _drop2.default)(commits, 10);
+  } else if (commitCount - 10 > 0) {
+    return (0, _drop2.default)(commits, commitCount - 10);
+  }
+
+  return commits;
+};
+
 exports.default = router.post('', function (req, res) {
   console.log("++++Request Body++++", req.body);
   var event = req.headers["x-gitlab-event"];
@@ -86,14 +104,15 @@ exports.default = router.post('', function (req, res) {
         var branch = ref && ref.substr(ref.lastIndexOf('/') + 1);
         projectId = project_id;
         str = '**' + (0, _upperCase2.default)(objectKind) + ':**\n      \n------\n\n*' + (0, _startCase2.default)(name) + ' [@' + username + '](https://gitlab.com/' + username + ')* **' + (0, _lowerCase2.default)(objectKind) + 'ed** ' + (totalCommitsCount ? totalCommitsCount + ' commit(s)' : '') + ' in' + (branch ? ' branch \'[' + branch + '](' + webUrl + '/tree/' + branch + ')\' of' : '') + ' [' + projectFullPath + '](' + webUrl + ').\n      \n------\n';
-        str += event === eventTypes.Push_Hook ? 'Commits:\n\n' : '';
-        commits.map(function (commit, index) {
+        str += event === eventTypes.Push_Hook ? (totalCommitsCount > 10 ? 'Last 10 ' : '') + 'Commits:\n\n' : '';
+        var reducedCommits = reduceCommits(commits, totalCommitsCount);
+        (0, _forEachRight2.default)(reducedCommits, function (commit, index) {
           var id = commit.id,
               message = commit.message,
               name = commit.author.name,
               url = commit.url;
 
-          str += '  ' + (index + 1) + '. *' + (0, _startCase2.default)(name) + '* **committed**: [' + message + '](' + url + ')\n';
+          str += '  ' + Math.abs(index - commits.length) + '. *' + (0, _startCase2.default)(name) + '* **committed**: [' + message + '](' + url + ')\n';
         });
         break;
       }

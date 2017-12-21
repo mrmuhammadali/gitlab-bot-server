@@ -2,6 +2,8 @@
 const builder = require('botbuilder');
 const router = require('express').Router()
 import capitalize from 'lodash/capitalize'
+import drop from 'lodash/drop'
+import forEachRight from 'lodash/forEachRight'
 import lowerCase from 'lodash/lowerCase'
 import size from 'lodash/size'
 import startCase from 'lodash/startCase'
@@ -17,6 +19,16 @@ import * as eventTypes from '../eventTypes'
 const telegramBot = new TelegramBot()
 const connector = new builder.ChatConnector(utils.SKYPE_CREDENTIALS);
 const skypeBot = new builder.UniversalBot(connector);
+
+const reduceCommits = (commits, commitCount) => {
+  if (commitCount > 20) {
+    return drop(commits, 10)
+  } else if (commitCount - 10 > 0) {
+    return drop(commits, commitCount - 10)
+  }
+
+  return commits
+}
 
 export default router.post('', (req, res) => {
   console.log("++++Request Body++++", req.body)
@@ -43,10 +55,11 @@ export default router.post('', (req, res) => {
       str = `**${upperCase(objectKind)}:**
       \n------\n\n*${startCase(name)} [@${username}](https://gitlab.com/${username})* **${lowerCase(objectKind)}ed** ${totalCommitsCount ? `${totalCommitsCount} commit(s)` : ''} in${branch ? ` branch '[${branch}](${webUrl}/tree/${branch})' of` : ''} [${projectFullPath}](${webUrl}).
       \n------\n`
-      str += event === eventTypes.Push_Hook ? `Commits:\n\n` : ''
-      commits.map((commit, index) => {
+      str += event === eventTypes.Push_Hook ? `${totalCommitsCount > 10 ? 'Last 10 ' : ''}Commits:\n\n` : ''
+      const reducedCommits = reduceCommits(commits, totalCommitsCount)
+      forEachRight(reducedCommits, (commit, index) => {
         const { id, message, author: { name }, url } = commit
-        str += `  ${index + 1}. *${startCase(name)}* **committed**: [${message}](${url})\n`
+        str += `  ${Math.abs(index - commits.length)}. *${startCase(name)}* **committed**: [${message}](${url})\n`
       })
       break
     }
