@@ -55,11 +55,11 @@ export default router.post('', (req, res) => {
       str = `**${upperCase(objectKind)}:**
       \n------\n\n*${startCase(name)} [@${username}](https://gitlab.com/${username})* **${lowerCase(objectKind)}ed** ${totalCommitsCount ? `${totalCommitsCount} commit(s)` : ''} in${branch ? ` branch '[${branch}](${webUrl}/tree/${branch})' of` : ''} [${projectFullPath}](${webUrl}).
       \n------\n`
-      str += event === eventTypes.Push_Hook ? `${totalCommitsCount > 10 ? 'Last 10 ' : ''}Commits:\n\n` : ''
+      str += event === eventTypes.PUSH_HOOK ? `${totalCommitsCount > 10 ? 'Last 10 ' : ''}Commits:\n\n` : ''
       const reducedCommits = reduceCommits(commits, totalCommitsCount)
       forEachRight(reducedCommits, (commit, index) => {
         const { id, message, author: { name }, url } = commit
-        str += `  ${Math.abs(index - commits.length)}. *${startCase(name)}* **committed**: [${message}](${url})\n`
+        str += `  ${Math.abs(index - commits.length)}. *${startCase(name)}* **committed**: [${message}](${url})`
       })
       break
     }
