@@ -64,7 +64,7 @@ export default router.post('', (req, res) => {
         })
       } else if (reducedCommits.length === 1){
         const {id, message, url} = reducedCommits[0]
-        str += `  [${message}](${url})`
+        str += ` Message: [${message}](${url})`
       }
       break
     }
