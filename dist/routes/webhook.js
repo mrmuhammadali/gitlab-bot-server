@@ -104,16 +104,25 @@ exports.default = router.post('', function (req, res) {
         var branch = ref && ref.substr(ref.lastIndexOf('/') + 1);
         projectId = project_id;
         str = '**' + (0, _upperCase2.default)(objectKind) + ':**\n      \n------\n\n*' + (0, _startCase2.default)(name) + ' [@' + username + '](https://gitlab.com/' + username + ')* **' + (0, _lowerCase2.default)(objectKind) + 'ed** ' + (totalCommitsCount ? totalCommitsCount + ' commit(s)' : '') + ' in' + (branch ? ' branch \'[' + branch + '](' + webUrl + '/tree/' + branch + ')\' of' : '') + ' [' + projectFullPath + '](' + webUrl + ').\n      \n------\n';
-        str += event === eventTypes.PUSH_HOOK ? (totalCommitsCount > 10 ? 'Last 10 ' : '') + 'Commits:\n\n' : '';
+        str += event === eventTypes.PUSH_HOOK && totalCommitsCount > 1 ? (totalCommitsCount > 10 ? 'Last 10 ' : '') + 'Commits:\n\n' : '';
         var reducedCommits = reduceCommits(commits, totalCommitsCount);
-        (0, _forEachRight2.default)(reducedCommits, function (commit, index) {
-          var id = commit.id,
-              message = commit.message,
-              name = commit.author.name,
-              url = commit.url;
+        if (reducedCommits.length > 1) {
+          (0, _forEachRight2.default)(reducedCommits, function (commit, index) {
+            var id = commit.id,
+                message = commit.message,
+                name = commit.author.name,
+                url = commit.url;
 
-          str += '  ' + Math.abs(index - commits.length) + '. *' + (0, _startCase2.default)(name) + '* **committed**: [' + message + '](' + url + ')';
-        });
+            str += '  ' + Math.abs(index - reducedCommits.length) + '. *' + (0, _startCase2.default)(name) + '*: [' + message + '](' + url + ')';
+          });
+        } else if (reducedCommits.length === 1) {
+          var _reducedCommits$ = reducedCommits[0],
+              id = _reducedCommits$.id,
+              message = _reducedCommits$.message,
+              url = _reducedCommits$.url;
+
+          str += '  [' + message + '](' + url + ')';
+        }
         break;
       }
 
@@ -135,13 +144,13 @@ exports.default = router.post('', function (req, res) {
             action = _req$body2$object_att.action,
             weight = _req$body2$object_att.weight,
             due_date = _req$body2$object_att.due_date,
-            url = _req$body2$object_att.url,
+            _url = _req$body2$object_att.url,
             _req$body2$assignees = _req$body2.assignees,
             assignees = _req$body2$assignees === undefined ? [] : _req$body2$assignees;
 
 
         projectId = _project_id;
-        str = '**[ISSUE #' + iid + '](' + url + '):**\n      \n---\n\n*' + (0, _startCase2.default)(_name) + ' [@' + _username + '](https://gitlab.com/' + _username + ')* **' + state + ' issue** in [' + _projectFullPath + '](' + _webUrl + ').\n      \n---\n\n      Title: ' + (0, _capitalize2.default)(title) + '\n      Due Date: ' + due_date + ' \n\n';
+        str = '**[ISSUE #' + iid + '](' + _url + '):**\n      \n---\n\n*' + (0, _startCase2.default)(_name) + ' [@' + _username + '](https://gitlab.com/' + _username + ')* **' + state + ' issue** in [' + _projectFullPath + '](' + _webUrl + ').\n      \n---\n\n      Title: ' + (0, _capitalize2.default)(title) + '\n      Due Date: ' + due_date + ' \n\n';
         str += assignees.length > 0 ? 'Assigned To: \n\n' : '';
         assignees.forEach(function (_ref, index) {
           var name = _ref.name,
@@ -164,7 +173,7 @@ exports.default = router.post('', function (req, res) {
             _req$body3$object_att = _req$body3.object_attributes,
             note = _req$body3$object_att.note,
             notableType = _req$body3$object_att.noteable_type,
-            _url = _req$body3$object_att.url,
+            _url2 = _req$body3$object_att.url,
             _req$body3$issue = _req$body3.issue,
             issue = _req$body3$issue === undefined ? {} : _req$body3$issue;
 
@@ -180,7 +189,7 @@ exports.default = router.post('', function (req, res) {
         projectId = _project_id2;
 
         if ((0, _size2.default)(issue) > 0) {
-          str = '**[ISSUE #' + _iid + '](' + _url + '):**\n        \n---\n\n*' + (0, _startCase2.default)(_name2) + ' [@' + _username2 + '](https://gitlab.com/' + _username2 + ')* **commented** on issue #' + _iid + ' in [' + _projectFullPath2 + '](' + _webUrl2 + ').\n        \n---\n\n        Issue State: ' + _state + ' \n\n        Title: ' + (0, _capitalize2.default)(_title) + ' \n\n        Note: ' + (0, _capitalize2.default)(note);
+          str = '**[ISSUE #' + _iid + '](' + _url2 + '):**\n        \n---\n\n*' + (0, _startCase2.default)(_name2) + ' [@' + _username2 + '](https://gitlab.com/' + _username2 + ')* **commented** on issue #' + _iid + ' in [' + _projectFullPath2 + '](' + _webUrl2 + ').\n        \n---\n\n        Issue State: ' + _state + ' \n\n        Title: ' + (0, _capitalize2.default)(_title) + ' \n\n        Note: ' + (0, _capitalize2.default)(note);
         }
         break;
       }
