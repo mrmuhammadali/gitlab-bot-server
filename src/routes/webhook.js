@@ -43,6 +43,8 @@ export default router.post('', (req, res) => {
         object_kind: objectKind,
         user_name: name,
         user_username: username,
+        before,
+        after,
         project_id,
         ref = '',
         project: { path_with_namespace: projectFullPath, web_url: webUrl },
@@ -53,14 +55,14 @@ export default router.post('', (req, res) => {
       const branch = ref && ref.substr(ref.lastIndexOf('/') + 1)
       projectId = project_id
       str = `**${upperCase(objectKind)}:**
-      \n------\n\n*${startCase(name)} [@${username}](https://gitlab.com/${username})* **${lowerCase(objectKind)}ed** ${totalCommitsCount ? `${totalCommitsCount} commit${totalCommitsCount > 1 ? 's' : ''}` : ''} in${branch ? ` branch '[${branch}](${webUrl}/tree/${branch})' of` : ''} [${projectFullPath}](${webUrl}).
+      \n------\n\n*${startCase(name)} [@${username}](https://gitlab.com/${username})* **${lowerCase(objectKind)}ed** ${totalCommitsCount ? `${totalCommitsCount} commit${totalCommitsCount > 1 ? 's' : ''}` : ''} in${branch ? ` branch '[${branch}](${webUrl}/tree/${branch})' of` : ''} [${projectFullPath}](${webUrl}) [(Compare changes)](${webUrl}/compare/${before}...${after}).
       \n------\n`
       str += event === eventTypes.PUSH_HOOK && totalCommitsCount > 1 ? `${totalCommitsCount > 10 ? 'Last 10 ' : ''}Commits:\n\n` : ''
       const reducedCommits = reduceCommits(commits, totalCommitsCount)
       if (reducedCommits.length > 1) {
         forEachRight(reducedCommits, (commit, index) => {
           const {id, message, author: {name}, url} = commit
-          str += `  ${Math.abs(index - reducedCommits.length)}. *${startCase(name)}*: [${message}](${url})`
+          str += `  ${Math.abs(index - reducedCommits.length)}. [${id.substr(0, 8)}](${url}) - *${startCase(name)}*: ${message}`
         })
       } else if (reducedCommits.length === 1){
         const {id, message, url} = reducedCommits[0]

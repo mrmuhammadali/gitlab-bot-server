@@ -91,6 +91,8 @@ exports.default = router.post('', function (req, res) {
             objectKind = _req$body.object_kind,
             name = _req$body.user_name,
             username = _req$body.user_username,
+            before = _req$body.before,
+            after = _req$body.after,
             project_id = _req$body.project_id,
             _req$body$ref = _req$body.ref,
             ref = _req$body$ref === undefined ? '' : _req$body$ref,
@@ -103,7 +105,7 @@ exports.default = router.post('', function (req, res) {
 
         var branch = ref && ref.substr(ref.lastIndexOf('/') + 1);
         projectId = project_id;
-        str = '**' + (0, _upperCase2.default)(objectKind) + ':**\n      \n------\n\n*' + (0, _startCase2.default)(name) + ' [@' + username + '](https://gitlab.com/' + username + ')* **' + (0, _lowerCase2.default)(objectKind) + 'ed** ' + (totalCommitsCount ? totalCommitsCount + ' commit' + (totalCommitsCount > 1 ? 's' : '') : '') + ' in' + (branch ? ' branch \'[' + branch + '](' + webUrl + '/tree/' + branch + ')\' of' : '') + ' [' + projectFullPath + '](' + webUrl + ').\n      \n------\n';
+        str = '**' + (0, _upperCase2.default)(objectKind) + ':**\n      \n------\n\n*' + (0, _startCase2.default)(name) + ' [@' + username + '](https://gitlab.com/' + username + ')* **' + (0, _lowerCase2.default)(objectKind) + 'ed** ' + (totalCommitsCount ? totalCommitsCount + ' commit' + (totalCommitsCount > 1 ? 's' : '') : '') + ' in' + (branch ? ' branch \'[' + branch + '](' + webUrl + '/tree/' + branch + ')\' of' : '') + ' [' + projectFullPath + '](' + webUrl + ') [(Compare changes)](' + webUrl + '/compare/' + before + '...' + after + ').\n      \n------\n';
         str += event === eventTypes.PUSH_HOOK && totalCommitsCount > 1 ? (totalCommitsCount > 10 ? 'Last 10 ' : '') + 'Commits:\n\n' : '';
         var reducedCommits = reduceCommits(commits, totalCommitsCount);
         if (reducedCommits.length > 1) {
@@ -113,7 +115,7 @@ exports.default = router.post('', function (req, res) {
                 name = commit.author.name,
                 url = commit.url;
 
-            str += '  ' + Math.abs(index - reducedCommits.length) + '. *' + (0, _startCase2.default)(name) + '*: [' + message + '](' + url + ')';
+            str += '  ' + Math.abs(index - reducedCommits.length) + '. [' + id.substr(0, 8) + '](' + url + ') - *' + (0, _startCase2.default)(name) + '*: ' + message;
           });
         } else if (reducedCommits.length === 1) {
           var _reducedCommits$ = reducedCommits[0],
