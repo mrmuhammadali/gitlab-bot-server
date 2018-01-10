@@ -123,7 +123,7 @@ exports.default = router.post('', function (req, res) {
               message = _reducedCommits$.message,
               url = _reducedCommits$.url;
 
-          str += ' Message: [' + message + '](' + url + ')';
+          str += ' [' + id.substr(0, 8) + '](' + url + ') - ' + message;
         }
         break;
       }
