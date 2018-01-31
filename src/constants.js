@@ -1,15 +1,14 @@
 export const GITLAB_URL = 'https://gitlab.com/api/v4'
 export const BASE_URL = 'https://gitlab-bot-server.herokuapp.com'
 export const AUTH_CALLBACK_ENDPOINT = '/auth-callback'
-export const TELEGRAM_TOKEN = '390407644:AAF5qrrLrku8zMel5lHUKF1czBv5kyQrhJY'
-// export const TELEGRAM_TOKEN = '437741439:AAG0P8KDrMuH-oCm38JwJE1-ORz5aJcIvMI'
+export const TELEGRAM_TOKEN = process.env.TELEGRAM_TOKEN
 export const TELEGRAM_BOT_URL = 'https://t.me/MrGitLabBot/'
-export const SKYPE_BOT_URL = 'https://join.skype.com/bot/8864cf5d-3c38-457f-976f-cfb07dd93c7f'
+export const SKYPE_BOT_URL = `https://join.skype.com/bot/${process.env.MICROSOFT_APP_ID}`
 
 export const GITLAB_CREDENTIALS = {
   client: {
-    id: "c7002dc3c0bd1cdb9c78296b84798a75dfb99b3392e4aec0f02979f4e572a49a",
-    secret: "48a43b745748f27485bcd29b9e61765e2a1266eea4e0d1b11a96a9c02ba3d0df"
+    id: process.env.GITLAB_CONSUMER_KEY,
+    secret: process.env.GITLAB_CONSUMER_SECRET
   },
   auth: {
     tokenHost: GITLAB_URL,
@@ -18,19 +17,15 @@ export const GITLAB_CREDENTIALS = {
   }
 }
 
-export const SKYPE_ADDRESS = {
-  conversation: {
-    id: ''
-  },
-  bot: {
-    id: '8864cf5d-3c38-457f-976f-cfb07dd93c7f'
-  },
-  serviceUrl: 'https://smba.trafficmanager.net/apis/'
+export const SKYPE_CREDENTIALS = {
+  appId: process.env.MICROSOFT_APP_ID,
+  appPassword: process.env.MICROSOFT_APP_PASSWORD
 }
 
-export const SKYPE_CREDENTIALS = {
-  appId: "8864cf5d-3c38-457f-976f-cfb07dd93c7f",
-  appPassword: "MRQff6a6AS1iSgfvpJra948"
+export const SKYPE_ADDRESS = {
+  conversation: { id: '' },
+  bot: { id: process.env.MICROSOFT_APP_ID },
+  serviceUrl: 'https://smba.trafficmanager.net/apis/'
 }
 
 export const DB_CONFIG = {
@@ -79,10 +74,10 @@ export const MESSAGE = {
   /delintegration - Delete integration
   /help - List available commands
   /cancel - Cancel the current command`,
-  INTRODUCE_BOT_SKYPE: `I'm a GitLab bot. I'll send notifications of activities in a project.\n\nAvailable commands:
-  connect @GitLab Bot - Authorize bot via OAuth
-  newintegration @GitLab Bot - Add integration with a GitLab repository
-  listintegrations @GitLab Bot - List all current integrations
-  delintegration @GitLab Bot - Delete integration
+  INTRODUCE_BOT_SKYPE: `I'm a GitLab bot. I'll send notifications of activities in a project.\n\nAvailable commands:\n
+  connect @GitLab Bot - Authorize bot via OAuth\n
+  newintegration @GitLab Bot - Add integration with a GitLab repository\n
+  listintegrations @GitLab Bot - List all current integrations\n
+  delintegration @GitLab Bot - Delete integration\n
   help @GitLab Bot - List available commands`
 }

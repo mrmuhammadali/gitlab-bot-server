@@ -6,15 +6,14 @@ Object.defineProperty(exports, "__esModule", {
 var GITLAB_URL = exports.GITLAB_URL = 'https://gitlab.com/api/v4';
 var BASE_URL = exports.BASE_URL = 'https://gitlab-bot-server.herokuapp.com';
 var AUTH_CALLBACK_ENDPOINT = exports.AUTH_CALLBACK_ENDPOINT = '/auth-callback';
-var TELEGRAM_TOKEN = exports.TELEGRAM_TOKEN = '390407644:AAF5qrrLrku8zMel5lHUKF1czBv5kyQrhJY';
-// export const TELEGRAM_TOKEN = '437741439:AAG0P8KDrMuH-oCm38JwJE1-ORz5aJcIvMI'
+var TELEGRAM_TOKEN = exports.TELEGRAM_TOKEN = process.env.TELEGRAM_TOKEN;
 var TELEGRAM_BOT_URL = exports.TELEGRAM_BOT_URL = 'https://t.me/MrGitLabBot/';
-var SKYPE_BOT_URL = exports.SKYPE_BOT_URL = 'https://join.skype.com/bot/8864cf5d-3c38-457f-976f-cfb07dd93c7f';
+var SKYPE_BOT_URL = exports.SKYPE_BOT_URL = 'https://join.skype.com/bot/' + process.env.MICROSOFT_APP_ID;
 
 var GITLAB_CREDENTIALS = exports.GITLAB_CREDENTIALS = {
   client: {
-    id: "c7002dc3c0bd1cdb9c78296b84798a75dfb99b3392e4aec0f02979f4e572a49a",
-    secret: "48a43b745748f27485bcd29b9e61765e2a1266eea4e0d1b11a96a9c02ba3d0df"
+    id: process.env.GITLAB_CONSUMER_KEY,
+    secret: process.env.GITLAB_CONSUMER_SECRET
   },
   auth: {
     tokenHost: GITLAB_URL,
@@ -23,19 +22,15 @@ var GITLAB_CREDENTIALS = exports.GITLAB_CREDENTIALS = {
   }
 };
 
-var SKYPE_ADDRESS = exports.SKYPE_ADDRESS = {
-  conversation: {
-    id: ''
-  },
-  bot: {
-    id: '8864cf5d-3c38-457f-976f-cfb07dd93c7f'
-  },
-  serviceUrl: 'https://smba.trafficmanager.net/apis/'
+var SKYPE_CREDENTIALS = exports.SKYPE_CREDENTIALS = {
+  appId: process.env.MICROSOFT_APP_ID,
+  appPassword: process.env.MICROSOFT_APP_PASSWORD
 };
 
-var SKYPE_CREDENTIALS = exports.SKYPE_CREDENTIALS = {
-  appId: "8864cf5d-3c38-457f-976f-cfb07dd93c7f",
-  appPassword: "MRQff6a6AS1iSgfvpJra948"
+var SKYPE_ADDRESS = exports.SKYPE_ADDRESS = {
+  conversation: { id: '' },
+  bot: { id: process.env.MICROSOFT_APP_ID },
+  serviceUrl: 'https://smba.trafficmanager.net/apis/'
 };
 
 var DB_CONFIG = exports.DB_CONFIG = {
@@ -78,5 +73,5 @@ var MESSAGE = exports.MESSAGE = {
   LIST_INTEGRATION: 'Following projects are integrated:\n',
   DATABASE_ERROR: "Process failed! Try again later.",
   INTRODUCE_BOT_TELEGRAM: 'I\'m a GitLab bot. I\'ll send notifications of activities in a project.\n\nAvailable commands:\n  /connect - Authorize bot via OAuth\n  /newintegration - Add integration with a GitLab repository\n  /listintegrations - List all current integrations\n  /delintegration - Delete integration\n  /help - List available commands\n  /cancel - Cancel the current command',
-  INTRODUCE_BOT_SKYPE: 'I\'m a GitLab bot. I\'ll send notifications of activities in a project.\n\nAvailable commands:\n  connect @GitLab Bot - Authorize bot via OAuth\n  newintegration @GitLab Bot - Add integration with a GitLab repository\n  listintegrations @GitLab Bot - List all current integrations\n  delintegration @GitLab Bot - Delete integration\n  help @GitLab Bot - List available commands'
+  INTRODUCE_BOT_SKYPE: 'I\'m a GitLab bot. I\'ll send notifications of activities in a project.\n\nAvailable commands:\n\n  connect @GitLab Bot - Authorize bot via OAuth\n\n  newintegration @GitLab Bot - Add integration with a GitLab repository\n\n  listintegrations @GitLab Bot - List all current integrations\n\n  delintegration @GitLab Bot - Delete integration\n\n  help @GitLab Bot - List available commands'
 };
