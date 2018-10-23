@@ -1,7 +1,9 @@
 // libs
 import bodyParser from 'body-parser'
 import express from 'express'
-const builder = require('botbuilder')
+import {
+  ChatConnector, UniversalBot, Prompts
+} from 'botbuilder'
 
 // src
 import * as routes from './routes'
@@ -18,7 +20,7 @@ import { BotOperations } from './botOperations'
 
 const telegramBot = new TelegramBot()
 const botOperations = new BotOperations()
-const connector = new builder.ChatConnector(SKYPE_CREDENTIALS)
+const connector = new ChatConnector(SKYPE_CREDENTIALS)
 const app = express()
   .use(bodyParser.json())
   .use(AUTH_CALLBACK_ENDPOINT, routes.authCallback)
@@ -37,7 +39,13 @@ app.get('/get-all', (req, res) => {
 
 app.post('/skype-messaging', connector.listen())
 
-const skypeBot = new builder.UniversalBot(connector, session => {
+async function dummy() {
+  return "=======> lol"
+}
+
+dummy().then(resolved => console.log("------------------->", resolved))
+
+const skypeBot = new UniversalBot(connector, session => {
   const { address, text } = session.message
   console.log('Session: ', address)
   botOperations.handleCommands(text, true, session)
@@ -46,7 +54,7 @@ const skypeBot = new builder.UniversalBot(connector, session => {
 skypeBot.dialog('askSpaceIntegrate', [
   (session, args) => {
     session.dialogData.projects = args.projects
-    builder.Prompts.choice(
+    Prompts.choice(
       session,
       MESSAGE.CHOOSE_SAPCE_INTEGRATE,
       args.projects,
@@ -70,7 +78,7 @@ skypeBot.dialog('askSpaceIntegrate', [
 skypeBot.dialog('askSpaceDelete', [
   (session, args) => {
     session.dialogData.projects = args.projects
-    builder.Prompts.choice(session, MESSAGE.CHOOSE_SAPCE_DELETE, args.projects)
+    Prompts.choice(session, MESSAGE.CHOOSE_SAPCE_DELETE, args.projects)
   },
   (session, results) => {
     const { index, entity } = results.response

@@ -2,26 +2,27 @@
 import * as constants from '../constants'
 import models from '../models'
 import { TelegramBot } from '../TelegramBot'
+import {
+  ChatConnector, UniversalBot, Message
+} from 'botbuilder'
 
 // libs
 import { Router } from 'express'
 import getOr from 'lodash/fp/getOr'
-const builder = require('botbuilder')
-const oauth2 = require('simple-oauth2').create(constants.GITLAB_CREDENTIALS)
+import { create as oauth2Create } from "simple-oauth2"
 
 const router = Router()
 const telegramBot = new TelegramBot()
-const connector = new builder.ChatConnector(constants.SKYPE_CREDENTIALS)
-const skypeBot = new builder.UniversalBot(connector)
+const connector = new ChatConnector(constants.SKYPE_CREDENTIALS)
+const skypeBot = new UniversalBot(connector)
 
-function getToken(options) {
+function getToken(connection, options) {
   return new Promise((resolve, reject) => {
-    oauth2.authorizationCode.getToken(options, (error, result) => {
+    return connection.authorizationCode.getToken(options, (error, result) => {
       if (error) {
         return reject(error)
       }
-
-      const token = oauth2.accessToken.create(result)
+      const token = connection.accessToken.create(result)
 
       return resolve(token)
     })
@@ -40,15 +41,16 @@ router.get('', (req, res) => {
   const code = getOr('', 'query.code')(req)
   const chatId = getOr('', 'query.state')(req)
   const address = getSkypeAddress(chatId)
-  const reply = new builder.Message().address(address)
+  const reply = new Message().address(address)
   const isSkype = /[a-z]/.test(chatId)
   const options = {
     code,
     grant_type: 'authorization_code',
     redirect_uri: constants.BASE_URL + constants.AUTH_CALLBACK_ENDPOINT,
   }
+  const oauth2Connection = oauth2Create(constants.GITLAB_CREDENTIALS)
 
-  getToken(options)
+  return getToken(oauth2Connection, options)
     .then(token => {
       console.log('Token: ', token)
       console.log('Auth ChatId: ', chatId)
