@@ -39,12 +39,6 @@ app.get('/get-all', (req, res) => {
 
 app.post('/skype-messaging', connector.listen())
 
-async function dummy() {
-  return "=======> lol"
-}
-
-dummy().then(resolved => console.log("------------------->", resolved))
-
 const skypeBot = new UniversalBot(connector, session => {
   const { address, text } = session.message
   console.log('Session: ', address)
